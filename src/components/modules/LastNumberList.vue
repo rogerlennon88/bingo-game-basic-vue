@@ -61,7 +61,6 @@ export default {
 }
 
 .ball {
-  min-width: 64px;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;

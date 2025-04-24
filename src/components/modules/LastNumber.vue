@@ -1,6 +1,6 @@
 <template>
   <div id="last-number" class="module">
-    <h2>Última Balota</h2>
+    <h2 class="title-2">Última Balota</h2>
     <span class="ball num-1">{{ ultimaBalota }}</span>
   </div>
 </template>
@@ -21,7 +21,6 @@ export default {
 
 <style scoped>
 /* last-number */
-
 #last-number {
   padding-bottom: calc(var(--gap) * 1.5);
 }
@@ -36,11 +35,11 @@ export default {
 }
 
 .ball {
-  min-width: 160px;
+  min-width: 128px;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: inset 4px 2px 1px rgba(216, 216, 216, 0.6), 0px 4px 2px 1px rgba(181, 168, 150, 0.6);
+  box-shadow: 0px 4px 2px 1px rgba(181, 168, 150, 0.6);
 }
 </style>

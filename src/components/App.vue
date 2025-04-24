@@ -1,47 +1,57 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <div>
+    <header>
+      <section id="brand">
+        <img class="logo" src="/public/img/logo.png" alt="Aladdingo Logo" />
+      </section>
+      <section id="page-title">
+        <h1>Validador de Juego</h1>
+      </section>
+    </header>
+    <main class="container game">
+      <section class="block">
+        <GameBoard @marcar-balota="handleMarcarBalota"></GameBoard>
+      </section>
+      <section class="block">
+        <LastNumber :ultimaBalota="ultimaBalota"></LastNumber>
+        <LastNumberList :lastFourBalls="ultimasCuatroBalotas"></LastNumberList>
+      </section>
+    </main>
+  </div>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<script>
+import GameBoard from "./modules/GameBoard.vue"
+import LastNumber from "./modules/LastNumber.vue"
+import LastNumberList from "./modules/LastNumberList.vue"
+import { ref } from "vue"
+
+export default {
+  name: "App",
+  components: {
+    GameBoard,
+    LastNumber,
+    LastNumberList,
+  },
+  setup() {
+    const ultimaBalota = ref("")
+    const ultimasCuatroBalotas = ref([])
+
+    const handleMarcarBalota = (balota) => {
+      const balotaString = String(balota) // Convertimos la balota a string
+      ultimaBalota.value = balotaString
+      ultimasCuatroBalotas.value = [balotaString, ...ultimasCuatroBalotas.value.slice(0, 4)]
+      console.log(`Balota marcada en App.vue: ${balotaString}`)
+      // Aquí iría la lógica para actualizar el archivo data.json
+    }
+
+    return {
+      ultimaBalota,
+      ultimasCuatroBalotas,
+      handleMarcarBalota,
+    }
+  },
 }
+</script>
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
-</style>
+<style scoped></style>

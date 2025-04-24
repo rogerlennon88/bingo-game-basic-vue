@@ -1,0 +1,14 @@
+/* css/layout/_variables.css */
+
+:root {
+  --color-primary: rgb(96, 130, 182);
+  --color-secondary: rgb(226, 223, 210);
+  --color-tertiary: rgb(229, 228, 226);
+  --color-white: #fff;
+  --color-black: #000;
+  --color-primary-disabled: rgb(182, 208, 226);
+  --fs-sm: 1.6rem;
+  --fw-regular: 400;
+  --fw-bold: 700;
+  --gap: 8px;
+}

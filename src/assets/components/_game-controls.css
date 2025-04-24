@@ -1,0 +1,7 @@
+/* css/components/_game-controlss.css */
+
+#game-controls .game-controls-list {
+  display: grid;
+  gap: var(--gap);
+  grid-auto-flow: column;
+}

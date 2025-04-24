@@ -1,0 +1,9 @@
+/* css/layout/_game.css */
+
+.game {
+  padding: var(--gap);
+  gap: calc(var(--gap) * 2);
+  flex-wrap: nowrap;
+  justify-content: center;
+}
+

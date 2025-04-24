@@ -1,0 +1,11 @@
+/* css/layout/_modules.css */
+
+.module {
+  background-color: rgb(237, 234, 222);
+  padding: var(--gap);
+  border: 1px solid white;
+  border-radius: calc(var(--gap) / 2);
+  display: grid;
+  gap: var(--gap);
+  place-content: center;
+}

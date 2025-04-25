@@ -1,3 +1,5 @@
+<!-- src/components/modules/LastNumber.vue -->
+
 <template>
   <div id="last-number" class="module">
     <h2 class="title-2">Última Balota</h2>
@@ -6,15 +8,24 @@
 </template>
 
 <script>
-import { ref } from "vue"
+import { computed } from "vue"
 
 export default {
   name: "LastNumber",
   props: {
-    ultimaBalota: {
-      type: String, // Cambiamos el tipo a String
-      default: "", // Cambiamos el valor por defecto a un string vacío
+    markedBalls: {
+      type: Array,
+      default: () => [],
     },
+  },
+  setup(props) {
+    const ultimaBalota = computed(() => {
+      return props.markedBalls.length > 0 ? props.markedBalls[0] : ""
+    })
+
+    return {
+      ultimaBalota,
+    }
   },
 }
 </script>

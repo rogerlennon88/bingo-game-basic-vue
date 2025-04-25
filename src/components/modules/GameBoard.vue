@@ -1,116 +1,109 @@
+<!-- src/components/modules/GameBoard.vue -->
+
 <template>
   <div id="game-board" class="module">
     <div id="grid-game-board" class="board-y">
-      <div class="group">
-        <div class="cell"><button id="b-ggb" class="btn-ggb letter lock">B</button></div>
-        <div class="cell"><button id="1" class="btn-ggb num" @click="marcarBalota('1')">1</button></div>
-        <div class="cell"><button id="2" class="btn-ggb num" @click="marcarBalota('2')">2</button></div>
-        <div class="cell"><button id="3" class="btn-ggb num" @click="marcarBalota('3')">3</button></div>
-        <div class="cell"><button id="4" class="btn-ggb num" @click="marcarBalota('4')">4</button></div>
-        <div class="cell"><button id="5" class="btn-ggb num" @click="marcarBalota('5')">5</button></div>
-        <div class="cell"><button id="6" class="btn-ggb num" @click="marcarBalota('6')">6</button></div>
-        <div class="cell"><button id="7" class="btn-ggb num" @click="marcarBalota('7')">7</button></div>
-        <div class="cell"><button id="8" class="btn-ggb num" @click="marcarBalota('8')">8</button></div>
-        <div class="cell"><button id="9" class="btn-ggb num" @click="marcarBalota('9')">9</button></div>
-        <div class="cell"><button id="10" class="btn-ggb num" @click="marcarBalota('10')">10</button></div>
-        <div class="cell"><button id="11" class="btn-ggb num" @click="marcarBalota('11')">11</button></div>
-        <div class="cell"><button id="12" class="btn-ggb num" @click="marcarBalota('12')">12</button></div>
-        <div class="cell"><button id="13" class="btn-ggb num" @click="marcarBalota('13')">13</button></div>
-        <div class="cell"><button id="14" class="btn-ggb num" @click="marcarBalota('14')">14</button></div>
-        <div class="cell"><button id="15" class="btn-ggb num" @click="marcarBalota('15')">15</button></div>
-      </div>
-      <div class="group">
-        <div class="cell"><button id="i-ggb" class="btn-ggb letter lock">I</button></div>
-        <div class="cell"><button id="16" class="btn-ggb num" @click="marcarBalota('16')">16</button></div>
-        <div class="cell"><button id="17" class="btn-ggb num" @click="marcarBalota('17')">17</button></div>
-        <div class="cell"><button id="18" class="btn-ggb num" @click="marcarBalota('18')">18</button></div>
-        <div class="cell"><button id="19" class="btn-ggb num" @click="marcarBalota('19')">19</button></div>
-        <div class="cell"><button id="20" class="btn-ggb num" @click="marcarBalota('20')">20</button></div>
-        <div class="cell"><button id="21" class="btn-ggb num" @click="marcarBalota('21')">21</button></div>
-        <div class="cell"><button id="22" class="btn-ggb num" @click="marcarBalota('22')">22</button></div>
-        <div class="cell"><button id="23" class="btn-ggb num" @click="marcarBalota('23')">23</button></div>
-        <div class="cell"><button id="24" class="btn-ggb num" @click="marcarBalota('24')">24</button></div>
-        <div class="cell"><button id="25" class="btn-ggb num" @click="marcarBalota('25')">25</button></div>
-        <div class="cell"><button id="26" class="btn-ggb num" @click="marcarBalota('26')">26</button></div>
-        <div class="cell"><button id="27" class="btn-ggb num" @click="marcarBalota('27')">27</button></div>
-        <div class="cell"><button id="28" class="btn-ggb num" @click="marcarBalota('28')">28</button></div>
-        <div class="cell"><button id="29" class="btn-ggb num" @click="marcarBalota('29')">29</button></div>
-        <div class="cell"><button id="30" class="btn-ggb num" @click="marcarBalota('30')">30</button></div>
-      </div>
-      <div class="group">
-        <div class="cell"><button id="n-ggb" class="btn-ggb letter lock">N</button></div>
-        <div class="cell"><button id="31" class="btn-ggb num" @click="marcarBalota('31')">31</button></div>
-        <div class="cell"><button id="32" class="btn-ggb num" @click="marcarBalota('32')">32</button></div>
-        <div class="cell"><button id="33" class="btn-ggb num" @click="marcarBalota('33')">33</button></div>
-        <div class="cell"><button id="34" class="btn-ggb num" @click="marcarBalota('34')">34</button></div>
-        <div class="cell"><button id="35" class="btn-ggb num" @click="marcarBalota('35')">35</button></div>
-        <div class="cell"><button id="36" class="btn-ggb num" @click="marcarBalota('36')">36</button></div>
-        <div class="cell"><button id="37" class="btn-ggb num" @click="marcarBalota('37')">37</button></div>
-        <div class="cell"><button id="38" class="btn-ggb num" @click="marcarBalota('38')">38</button></div>
-        <div class="cell"><button id="39" class="btn-ggb num" @click="marcarBalota('39')">39</button></div>
-        <div class="cell"><button id="40" class="btn-ggb num" @click="marcarBalota('40')">40</button></div>
-        <div class="cell"><button id="41" class="btn-ggb num" @click="marcarBalota('41')">41</button></div>
-        <div class="cell"><button id="42" class="btn-ggb num" @click="marcarBalota('42')">42</button></div>
-        <div class="cell"><button id="43" class="btn-ggb num" @click="marcarBalota('43')">43</button></div>
-        <div class="cell"><button id="44" class="btn-ggb num" @click="marcarBalota('44')">44</button></div>
-        <div class="cell"><button id="45" class="btn-ggb num" @click="marcarBalota('45')">45</button></div>
-      </div>
-      <div class="group">
-        <div class="cell"><button id="g-ggb" class="btn-ggb letter lock">G</button></div>
-        <div class="cell"><button id="46" class="btn-ggb num" @click="marcarBalota('46')">46</button></div>
-        <div class="cell"><button id="47" class="btn-ggb num" @click="marcarBalota('47')">47</button></div>
-        <div class="cell"><button id="48" class="btn-ggb num" @click="marcarBalota('48')">48</button></div>
-        <div class="cell"><button id="49" class="btn-ggb num" @click="marcarBalota('49')">49</button></div>
-        <div class="cell"><button id="50" class="btn-ggb num" @click="marcarBalota('50')">50</button></div>
-        <div class="cell"><button id="51" class="btn-ggb num" @click="marcarBalota('51')">51</button></div>
-        <div class="cell"><button id="52" class="btn-ggb num" @click="marcarBalota('52')">52</button></div>
-        <div class="cell"><button id="53" class="btn-ggb num" @click="marcarBalota('53')">53</button></div>
-        <div class="cell"><button id="54" class="btn-ggb num" @click="marcarBalota('54')">54</button></div>
-        <div class="cell"><button id="55" class="btn-ggb num" @click="marcarBalota('55')">55</button></div>
-        <div class="cell"><button id="56" class="btn-ggb num" @click="marcarBalota('56')">56</button></div>
-        <div class="cell"><button id="57" class="btn-ggb num" @click="marcarBalota('57')">57</button></div>
-        <div class="cell"><button id="58" class="btn-ggb num" @click="marcarBalota('58')">58</button></div>
-        <div class="cell"><button id="59" class="btn-ggb num" @click="marcarBalota('59')">59</button></div>
-        <div class="cell"><button id="60" class="btn-ggb num" @click="marcarBalota('60')">60</button></div>
-      </div>
-      <div class="group">
-        <div class="cell"><button id="o-ggb" class="btn-ggb letter lock">O</button></div>
-        <div class="cell"><button id="61" class="btn-ggb num" @click="marcarBalota('61')">61</button></div>
-        <div class="cell"><button id="62" class="btn-ggb num" @click="marcarBalota('62')">62</button></div>
-        <div class="cell"><button id="63" class="btn-ggb num" @click="marcarBalota('63')">63</button></div>
-        <div class="cell"><button id="64" class="btn-ggb num" @click="marcarBalota('64')">64</button></div>
-        <div class="cell"><button id="65" class="btn-ggb num" @click="marcarBalota('65')">65</button></div>
-        <div class="cell"><button id="66" class="btn-ggb num" @click="marcarBalota('66')">66</button></div>
-        <div class="cell"><button id="67" class="btn-ggb num" @click="marcarBalota('67')">67</button></div>
-        <div class="cell"><button id="68" class="btn-ggb num" @click="marcarBalota('68')">68</button></div>
-        <div class="cell"><button id="69" class="btn-ggb num" @click="marcarBalota('69')">69</button></div>
-        <div class="cell"><button id="70" class="btn-ggb num" @click="marcarBalota('70')">70</button></div>
-        <div class="cell"><button id="71" class="btn-ggb num" @click="marcarBalota('71')">71</button></div>
-        <div class="cell"><button id="72" class="btn-ggb num" @click="marcarBalota('72')">72</button></div>
-        <div class="cell"><button id="73" class="btn-ggb num" @click="marcarBalota('73')">73</button></div>
-        <div class="cell"><button id="74" class="btn-ggb num" @click="marcarBalota('74')">74</button></div>
-        <div class="cell"><button id="75" class="btn-ggb num" @click="marcarBalota('75')">75</button></div>
+      <div v-for="(column, columnIndex) in tableroData" :key="columnIndex" class="group">
+        <div v-for="cell in column" :key="cell.id" class="cell">
+          <button v-if="cell.type === 'letter'" :id="cell.id" class="btn-ggb letter lock">
+            {{ cell.value }}
+          </button>
+          <button
+            v-else-if="cell.type === 'number'"
+            :id="cell.id"
+            class="btn-ggb num"
+            @click="marcarBalotaLocal(cell.value)"
+            :class="{ marked: balotasMarcadas.includes(String(cell.value)), lock: balotasMarcadas.includes(String(cell.value)) }"
+          >
+            {{ cell.value }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { ref } from "vue"
+import { ref, onMounted } from "vue"
 
 export default {
   name: "GameBoard",
+  emits: ["marcar-balota"],
   setup(props, { emit }) {
-    const marcarBalota = (numero) => {
-      const boton = document.getElementById(numero)
-      if (boton && !boton.classList.contains("marked")) {
-        boton.classList.add("marked", "lock")
-        emit("marcar-balota", numero)
+    const letters = ["B", "I", "N", "G", "O"]
+    const numbersPerColumn = 15
+    const tableroData = ref([])
+    const balotasMarcadas = ref([])
+
+    const generateTableroData = () => {
+      const data = []
+      for (let i = 0; i < 5; i++) {
+        const column = []
+        column.push({ type: "letter", value: letters[i], id: `${letters[i]}-ggb` })
+        for (let j = 1; j <= numbersPerColumn; j++) {
+          column.push({ type: "number", value: i * numbersPerColumn + j, id: i * numbersPerColumn + j })
+        }
+        data.push(column)
+      }
+      tableroData.value = data
+    }
+
+    const marcarBalotaLocal = (balota) => {
+      const balotaString = String(balota)
+      const isMarked = balotasMarcadas.value.includes(balotaString)
+
+      if (!isMarked) {
+        balotasMarcadas.value.unshift(balotaString) // Añadir al inicio del array
+        emit("marcar-balota", balotaString)
+        console.log("Marcando balota:", balotaString, "Nuevas marcadas:", balotasMarcadas.value)
+        guardarDatosGameBoard({
+          markedBalls: balotasMarcadas.value,
+        })
+      }
+      // Eliminamos la lógica para desmarcar
+    }
+
+    const guardarDatosGameBoard = async (datosAGuardar) => {
+      try {
+        const response = await fetch("http://localhost:3000/api/game-board-data", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(datosAGuardar),
+        })
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const result = await response.json()
+        console.log("Datos del GameBoard guardados correctamente:", result.message)
+      } catch (error) {
+        console.error("Error al guardar los datos del GameBoard:", error)
       }
     }
 
+    const cargarDatosInicialesGameBoard = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/game-board-data")
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const data = await response.json()
+        balotasMarcadas.value = data.markedBalls || []
+        console.log("Datos iniciales del GameBoard cargados:", balotasMarcadas.value)
+      } catch (error) {
+        console.error("Error al cargar los datos iniciales del GameBoard:", error)
+      } finally {
+        generateTableroData()
+      }
+    }
+
+    onMounted(cargarDatosInicialesGameBoard)
+
     return {
-      marcarBalota,
+      tableroData,
+      marcarBalotaLocal,
+      balotasMarcadas,
     }
   },
 }

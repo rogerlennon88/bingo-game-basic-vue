@@ -1,3 +1,5 @@
+<!-- src/components/modules/LastNumberList.vue -->
+
 <template>
   <div id="last-number-list" class="module">
     <h2>Últimas 4 Balotas</h2>
@@ -18,14 +20,14 @@ import { computed } from "vue"
 export default {
   name: "LastNumberList",
   props: {
-    lastFourBalls: {
+    markedBalls: {
       type: Array,
       default: () => [],
     },
   },
   setup(props) {
     const displayedBalls = computed(() => {
-      return props.lastFourBalls.slice(1, 5).map(String) // Aseguramos que todos los valores sean strings
+      return props.markedBalls.slice(1, 5) // Tomar desde el segundo hasta el quinto elemento
     })
 
     return {
@@ -61,6 +63,7 @@ export default {
 }
 
 .ball {
+  min-width: 64px;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;

@@ -1,3 +1,5 @@
+<!-- src/components/App.vue -->
+
 <template>
   <div>
     <header>
@@ -13,8 +15,9 @@
         <GameBoard @marcar-balota="handleMarcarBalota"></GameBoard>
       </section>
       <section class="block">
-        <LastNumber :ultimaBalota="ultimaBalota"></LastNumber>
-        <LastNumberList :lastFourBalls="ultimasCuatroBalotas"></LastNumberList>
+        <GameMode ref="gameModeRef" :initialPattern="loadedGamePattern"></GameMode>
+        <LastNumber :markedBalls="balotasMarcadas"></LastNumber>
+        <LastNumberList :markedBalls="balotasMarcadas"></LastNumberList>
       </section>
     </main>
   </div>
@@ -24,6 +27,7 @@
 import GameBoard from "./modules/GameBoard.vue"
 import LastNumber from "./modules/LastNumber.vue"
 import LastNumberList from "./modules/LastNumberList.vue"
+import GameMode from "./modules/GameMode.vue"
 import { ref, onMounted } from "vue"
 
 export default {
@@ -32,47 +36,54 @@ export default {
     GameBoard,
     LastNumber,
     LastNumberList,
+    GameMode,
   },
   setup() {
-    const ultimaBalota = ref("")
-    const ultimasCuatroBalotas = ref([])
     const balotasMarcadas = ref([])
+    const loadedGamePattern = ref([])
+    const gameModeRef = ref(null)
 
-    const cargarDatosIniciales = async () => {
-      console.log("Intentando cargar datos iniciales desde el backend...")
+    const cargarDatosGameBoard = async () => {
+      console.log("Cargando datos del GameBoard desde el backend...")
       try {
-        const response = await fetch("http://localhost:3000/api/game-data")
+        const response = await fetch("http://localhost:3000/api/game-board-data")
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
         const data = await response.json()
-        ultimaBalota.value = data.lastBall || ""
-        ultimasCuatroBalotas.value = data.lastFourBalls || []
         balotasMarcadas.value = data.markedBalls || []
-
-        balotasMarcadas.value.forEach((balota) => {
-          const boton = document.getElementById(balota)
-          if (boton && !boton.classList.contains("marked")) {
-            boton.classList.add("marked", "lock")
-          }
-        })
       } catch (error) {
-        console.error("Error al cargar los datos iniciales:", error)
+        console.error("Error al cargar los datos del GameBoard:", error)
       }
     }
 
-    onMounted(cargarDatosIniciales)
-
-    const guardarDatos = async () => {
+    const cargarGameModePattern = async () => {
+      console.log("Intentando cargar el patrón del GameMode desde el backend...")
       try {
-        const response = await fetch("http://localhost:3000/api/game-data", {
+        const response = await fetch("http://localhost:3000/api/game-mode-data")
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`)
+        }
+        const data = await response.json()
+        loadedGamePattern.value = data.gamePattern || []
+      } catch (error) {
+        console.error("Error al cargar el patrón del GameMode:", error)
+      }
+    }
+
+    const cargarDatosIniciales = async () => {
+      await cargarDatosGameBoard()
+      await cargarGameModePattern()
+    }
+
+    const guardarDatosGameBoard = async () => {
+      try {
+        const response = await fetch("http://localhost:3000/api/game-board-data", {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            lastBall: ultimaBalota.value,
-            lastFourBalls: ultimasCuatroBalotas.value,
             markedBalls: balotasMarcadas.value,
           }),
         })
@@ -80,25 +91,35 @@ export default {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
         const result = await response.json()
-        console.log("Datos guardados correctamente:", result.message)
+        console.log("Datos del GameBoard guardados correctamente:", result.message)
       } catch (error) {
-        console.error("Error al guardar los datos:", error)
+        console.error("Error al guardar los datos del GameBoard:", error)
       }
     }
 
-    const handleMarcarBalota = (balota) => {
+    const handleMarcarBalota = async (balota) => {
       const balotaString = String(balota)
-      ultimaBalota.value = balotaString
-      ultimasCuatroBalotas.value = [balotaString, ...ultimasCuatroBalotas.value.slice(0, 4)]
-      balotasMarcadas.value.push(balotaString)
+      const isMarked = balotasMarcadas.value.includes(balotaString)
+      if (!isMarked) {
+        balotasMarcadas.value.unshift(balotaString)
+      } else {
+        const index = balotasMarcadas.value.indexOf(balotaString)
+        if (index > -1) {
+          balotasMarcadas.value.splice(index, 1)
+        }
+      }
       console.log(`Balota marcada en App.vue: ${balotaString}`)
-      guardarDatos()
+      await guardarDatosGameBoard()
+      await cargarDatosGameBoard()
     }
 
+    onMounted(cargarDatosIniciales)
+
     return {
-      ultimaBalota,
-      ultimasCuatroBalotas,
+      balotasMarcadas,
       handleMarcarBalota,
+      loadedGamePattern,
+      gameModeRef,
     }
   },
 }

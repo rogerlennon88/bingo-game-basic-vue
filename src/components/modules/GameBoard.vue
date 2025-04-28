@@ -13,7 +13,7 @@
             :id="cell.id"
             class="btn-ggb num"
             @click="marcarBalotaLocal(cell.value)"
-            :class="{ marked: balotasMarcadas.includes(String(cell.value)), lock: balotasMarcadas.includes(String(cell.value)) }"
+            :class="{ marked: isBalotaMarcada(cell.value), lock: isBalotaMarcada(cell.value) }"
           >
             {{ cell.value }}
           </button>
@@ -24,16 +24,22 @@
 </template>
 
 <script>
-import { ref, onMounted } from "vue"
+import { ref, onMounted, watch, computed } from "vue"
 
 export default {
   name: "GameBoard",
   emits: ["marcar-balota"],
+  props: {
+    initialMarkedBalls: {
+      type: Array,
+      default: () => [],
+    },
+  },
   setup(props, { emit }) {
     const letters = ["B", "I", "N", "G", "O"]
     const numbersPerColumn = 15
     const tableroData = ref([])
-    const balotasMarcadas = ref([])
+    const balotasMarcadasLocal = ref([...props.initialMarkedBalls]) // Estado local para la reactividad
 
     const generateTableroData = () => {
       const data = []
@@ -48,19 +54,22 @@ export default {
       tableroData.value = data
     }
 
+    const isBalotaMarcada = (balota) => {
+      return balotasMarcadasLocal.value.includes(String(balota))
+    }
+
     const marcarBalotaLocal = (balota) => {
       const balotaString = String(balota)
-      const isMarked = balotasMarcadas.value.includes(balotaString)
+      const isMarked = balotasMarcadasLocal.value.includes(balotaString)
 
       if (!isMarked) {
-        balotasMarcadas.value.unshift(balotaString) // Añadir al inicio del array
+        balotasMarcadasLocal.value.unshift(balotaString) // Añadir al inicio del array local
         emit("marcar-balota", balotaString)
-        console.log("Marcando balota:", balotaString, "Nuevas marcadas:", balotasMarcadas.value)
+        console.log("Marcando balota:", balotaString, "Nuevas marcadas local:", balotasMarcadasLocal.value)
         guardarDatosGameBoard({
-          markedBalls: balotasMarcadas.value,
+          markedBalls: balotasMarcadasLocal.value,
         })
       }
-      // Eliminamos la lógica para desmarcar
     }
 
     const guardarDatosGameBoard = async (datosAGuardar) => {
@@ -89,8 +98,8 @@ export default {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
         const data = await response.json()
-        balotasMarcadas.value = data.markedBalls || []
-        console.log("Datos iniciales del GameBoard cargados:", balotasMarcadas.value)
+        balotasMarcadasLocal.value = data.markedBalls || [] // Actualizar el estado local
+        console.log("Datos iniciales del GameBoard cargados:", balotasMarcadasLocal.value)
       } catch (error) {
         console.error("Error al cargar los datos iniciales del GameBoard:", error)
       } finally {
@@ -100,10 +109,21 @@ export default {
 
     onMounted(cargarDatosInicialesGameBoard)
 
+    // Watch para reaccionar a los cambios en la prop initialMarkedBalls
+    watch(
+      () => props.initialMarkedBalls,
+      (newVal) => {
+        console.log("Prop initialMarkedBalls ha cambiado:", newVal)
+        balotasMarcadasLocal.value = [...newVal]
+      },
+      { deep: true }
+    )
+
     return {
       tableroData,
       marcarBalotaLocal,
-      balotasMarcadas,
+      isBalotaMarcada,
+      balotasMarcadasLocal,
     }
   },
 }

@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from "vue-router"
 import GameView from "../views/GameView.vue"
 import LastNumberView from "../views/LastNumberView.vue"
 import LastNumberListView from "../views/LastNumberListView.vue"
+import GameBoardView from "../views/GameBoardView.vue" // Importa GameBoardView
 
 const router = createRouter({
   history: createWebHistory(),
@@ -21,7 +22,13 @@ const router = createRouter({
       path: "/views/last-number-list/:direction?",
       name: "last-number-list",
       component: LastNumberListView,
-    }
+    },
+    {
+      path: "/views/game-board",
+      name: "game-board",
+      component: GameBoardView, // Añade la nueva ruta
+    },
+    // Aquí puedes añadir más rutas para otras vistas
   ],
 })
 

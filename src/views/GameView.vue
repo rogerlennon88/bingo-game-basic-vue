@@ -1,27 +1,27 @@
-<!-- src/components/App.vue -->
-
 <template>
-  <header v-if="$route.path === '/'">
-    <section id="brand">
-      <img class="logo" src="/public/img/logo.png" alt="Aladdingo Logo" />
-    </section>
-    <section id="page-title">
-      <h1>Validador de Juego</h1>
-    </section>
-  </header>
-  <main v-if="$route.path === '/'" class="container game">
-    <router-view></router-view>
-  </main>
-  <router-view v-else></router-view>
+  <section class="block">
+    <GameBoard @marcar-balota="handleMarcarBalota" :initialMarkedBalls="balotasMarcadas"></GameBoard>
+  </section>
+  <section class="block">
+    <GameMode ref="gameModeRef" :initialPattern="loadedGamePattern" @pattern-changed="handlePatternChanged"></GameMode>
+    <LastNumber :markedBalls="balotasMarcadas"></LastNumber>
+    <LastNumberList :markedBalls="balotasMarcadas"></LastNumberList>
+    <GameControls
+      @reiniciar-juego="handleReiniciarGameBoard"
+      @reiniciar-modo="handleReiniciarGameMode"
+      :hasMarkedBalls="hasMarkedBalls"
+      :markedPatternCount="markedPatternCount"
+    ></GameControls>
+  </section>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from "vue"
-import GameBoard from "./modules/GameBoard.vue"
-import LastNumber from "./modules/LastNumber.vue"
-import LastNumberList from "./modules/LastNumberList.vue"
-import GameMode from "./modules/GameMode.vue"
-import GameControls from "./modules/GameControls.vue"
+import GameBoard from "../components/modules/GameBoard.vue"
+import LastNumber from "../components/modules/LastNumber.vue"
+import LastNumberList from "../components/modules/LastNumberList.vue"
+import GameMode from "../components/modules/GameMode.vue"
+import GameControls from "../components/modules/GameControls.vue"
 
 const balotasMarcadas = ref([])
 const loadedGamePattern = ref([])
@@ -108,28 +108,28 @@ const handleMarcarBalota = async (balota) => {
   const isMarked = balotasMarcadas.value.includes(balotaString)
   if (!isMarked) {
     balotasMarcadas.value.unshift(balotaString)
-    console.log(`Balota marcada en App.vue: ${balotaString}`)
+    console.log(`Balota marcada en GameView.vue: ${balotaString}`)
     await guardarDatosGameBoard()
     await cargarDatosGameBoard()
   }
 }
 
 const handleReiniciarGameBoard = async () => {
-  console.log("Manejando el evento de reiniciar tablero en App.vue...")
+  console.log("Manejando el evento de reiniciar tablero en GameView.vue...")
   balotasMarcadas.value = [] // Limpiar las balotas marcadas en el cliente
   await guardarDatosGameBoard({ markedBalls: [] }) // Limpiar en el backend
   await cargarDatosGameBoard() // Recargar el estado inicial del GameBoard
 }
 
 const handleReiniciarGameMode = async () => {
-  console.log("Manejando el evento de reiniciar modo en App.vue...")
+  console.log("Manejando el evento de reiniciar modo en GameView.vue...")
   await guardarDatosGameMode({ gamePattern: [] }) // Limpiar el patrón en el backend
   await cargarGameModePattern() // Recargar el patrón inicial
 }
 
 const handlePatternChanged = (newPattern) => {
   markedPatternCount.value = newPattern.length
-  console.log("Patrón cambiado en App.vue:", newPattern)
+  console.log("Patrón cambiado en GameView.vue:", newPattern)
 }
 
 onMounted(cargarDatosIniciales)

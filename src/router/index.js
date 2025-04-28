@@ -1,8 +1,8 @@
 // src/router/index.js
-
 import { createRouter, createWebHistory } from "vue-router"
-import GameView from "../views/GameView.vue" // Importa GameView
+import GameView from "../views/GameView.vue"
 import LastNumberView from "../views/LastNumberView.vue"
+import LastNumberListView from "../views/LastNumberListView.vue"
 
 const router = createRouter({
   history: createWebHistory(),
@@ -10,14 +10,18 @@ const router = createRouter({
     {
       path: "/",
       name: "home",
-      component: GameView, // Ahora la ruta principal usa GameView
+      component: GameView,
     },
     {
       path: "/views/last-number",
       name: "last-number",
       component: LastNumberView,
     },
-    // Aquí puedes añadir más rutas para otras vistas
+    {
+      path: "/views/last-number-list/:direction?",
+      name: "last-number-list",
+      component: LastNumberListView,
+    }
   ],
 })
 

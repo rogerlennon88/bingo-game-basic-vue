@@ -1,3 +1,4 @@
+<!-- src/views/GameView.vue -->
 <template>
   <section class="block">
     <GameBoard @marcar-balota="handleMarcarBalota" :initialMarkedBalls="balotasMarcadas"></GameBoard>

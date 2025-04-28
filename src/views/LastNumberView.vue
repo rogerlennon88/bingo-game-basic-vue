@@ -1,6 +1,7 @@
+<!-- src/views/LastNumberView.vue -->
 <template>
-  <div id="last-number-view">
-    <span id="num-1" class="ball">{{ lastNumber }}</span>
+  <div id="last-number-view" class="ball">
+    {{ lastNumber }}
   </div>
 </template>
 
@@ -33,24 +34,20 @@ onMounted(() => {
 <style scoped>
 /* last-number-view */
 #last-number-view {
-  padding: 2vw;
+  margin: 2vw;
   aspect-ratio: 1 / 1;
-}
-#last-number-view #num-1 {
   background-color: white;
   color: rgb(25, 25, 112);
   font-size: 48vw;
   font-weight: var(--fw-bold);
-  padding: 1vw;
   border: 3vw solid rgba(233, 220, 201, 0.75);
   border-radius: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
+  min-width: 128px; /* Mantener el min-width si es necesario */
 }
 .ball {
-  min-width: 128px;
-  aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;

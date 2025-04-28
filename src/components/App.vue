@@ -14,10 +14,15 @@
       <GameBoard @marcar-balota="handleMarcarBalota" :initialMarkedBalls="balotasMarcadas"></GameBoard>
     </section>
     <section class="block">
-      <GameMode ref="gameModeRef" :initialPattern="loadedGamePattern"></GameMode>
+      <GameMode ref="gameModeRef" :initialPattern="loadedGamePattern" @pattern-changed="handlePatternChanged"></GameMode>
       <LastNumber :markedBalls="balotasMarcadas"></LastNumber>
       <LastNumberList :markedBalls="balotasMarcadas"></LastNumberList>
-      <GameControls @reiniciar-juego="handleReiniciarGameBoard" @reiniciar-modo="handleReiniciarGameMode"></GameControls>
+      <GameControls
+        @reiniciar-juego="handleReiniciarGameBoard"
+        @reiniciar-modo="handleReiniciarGameMode"
+        :hasMarkedBalls="hasMarkedBalls"
+        :markedPatternCount="markedPatternCount"
+      ></GameControls>
     </section>
   </main>
 </template>
@@ -28,7 +33,7 @@ import LastNumber from "./modules/LastNumber.vue"
 import LastNumberList from "./modules/LastNumberList.vue"
 import GameMode from "./modules/GameMode.vue"
 import GameControls from "./modules/GameControls.vue" // Importa GameControls
-import { ref, onMounted } from "vue"
+import { ref, onMounted, computed } from "vue"
 
 export default {
   name: "App",
@@ -43,6 +48,8 @@ export default {
     const balotasMarcadas = ref([])
     const loadedGamePattern = ref([])
     const gameModeRef = ref(null)
+    const markedPatternCount = ref(0)
+    const hasMarkedBalls = computed(() => balotasMarcadas.value.length > 0)
 
     const cargarDatosGameBoard = async () => {
       console.log("Cargando datos del GameBoard desde el backend...")
@@ -67,6 +74,7 @@ export default {
         }
         const data = await response.json()
         loadedGamePattern.value = data.gamePattern || []
+        markedPatternCount.value = data.gamePattern ? data.gamePattern.length : 0 // Inicializar el contador
       } catch (error) {
         console.error("Error al cargar el patrón del GameMode:", error)
       }
@@ -141,6 +149,11 @@ export default {
       await cargarGameModePattern() // Recargar el patrón inicial
     }
 
+    const handlePatternChanged = (newPattern) => {
+      markedPatternCount.value = newPattern.length
+      console.log("Patrón cambiado en App.vue:", newPattern)
+    }
+
     onMounted(cargarDatosIniciales)
 
     return {
@@ -150,6 +163,9 @@ export default {
       gameModeRef,
       handleReiniciarGameBoard,
       handleReiniciarGameMode,
+      hasMarkedBalls,
+      markedPatternCount,
+      handlePatternChanged,
     }
   },
 }

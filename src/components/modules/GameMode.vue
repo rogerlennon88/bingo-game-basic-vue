@@ -33,13 +33,14 @@ import { ref, watch, onMounted } from "vue"
 
 export default {
   name: "GameMode",
+  emits: ["pattern-changed"], // Emitir el evento pattern-changed
   props: {
     initialPattern: {
       type: Array,
       default: () => [],
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const letters = ["B", "I", "N", "G", "O"]
     const rows = 5
     const gameModeData = ref([])
@@ -74,6 +75,7 @@ export default {
         }
         selectedPattern.value = [...selectedPattern.value] // Trigger reactivity
         saveGameMode(selectedPattern.value) // Guardamos directamente aquí
+        emit("pattern-changed", selectedPattern.value) // Emitir el evento
       }
     }
 

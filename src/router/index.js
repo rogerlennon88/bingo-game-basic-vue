@@ -3,7 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import GameView from '../views/GameView.vue';
 import LastNumberView from '../views/LastNumberView.vue';
 import LastNumberListView from '../views/LastNumberListView.vue';
-import GameBoardView from '../views/GameBoardView.vue'; // Importa GameBoardView
+import GameBoardView from '../views/GameBoardView.vue';
+import GameModeView from '../views/GameModeView.vue'; // Importa GameModeView
 
 const router = createRouter({
   history: createWebHistory(),
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/views/game-board/:direction?',
       name: 'GameBoardView',
       component: GameBoardView
+    },
+    {
+      path: '/views/game-mode',
+      name: 'GameModeView',
+      component: GameModeView
     }
   ]
 });

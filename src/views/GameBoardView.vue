@@ -1,3 +1,4 @@
+<!-- src/views/GameBoardView.vue -->
 <template>
   <div id="game-board-view">
     <div id="grid-game-board" :class="gridDirectionClass">
@@ -67,7 +68,7 @@ const cargarDatosGameBoard = async () => {
     }
     const data = await response.json()
     markedBalls.value = data.markedBalls || []
-    console.log("Datos del GameBoard actualizados en GameBoardView:", markedBalls.value)
+    // console.log("Datos del GameBoard actualizados en GameBoardView:", markedBalls.value)
   } catch (error) {
     console.error("Error al cargar los datos del GameBoard:", error)
   }

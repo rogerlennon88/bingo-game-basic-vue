@@ -1,35 +1,34 @@
 // src/router/index.js
-import { createRouter, createWebHistory } from "vue-router"
-import GameView from "../views/GameView.vue"
-import LastNumberView from "../views/LastNumberView.vue"
-import LastNumberListView from "../views/LastNumberListView.vue"
-import GameBoardView from "../views/GameBoardView.vue" // Importa GameBoardView
+import { createRouter, createWebHistory } from 'vue-router';
+import GameView from '../views/GameView.vue';
+import LastNumberView from '../views/LastNumberView.vue';
+import LastNumberListView from '../views/LastNumberListView.vue';
+import GameBoardView from '../views/GameBoardView.vue'; // Importa GameBoardView
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
-      path: "/",
-      name: "home",
-      component: GameView,
+      path: '/',
+      name: 'Game',
+      component: GameView
     },
     {
-      path: "/views/last-number",
-      name: "last-number",
-      component: LastNumberView,
+      path: '/views/last-number',
+      name: 'LastNumberView',
+      component: LastNumberView
     },
     {
-      path: "/views/last-number-list/:direction?",
-      name: "last-number-list",
-      component: LastNumberListView,
+      path: '/views/last-number-list/:direction?',
+      name: 'LastNumberList',
+      component: LastNumberListView
     },
     {
-      path: "/views/game-board",
-      name: "game-board",
-      component: GameBoardView, // Añade la nueva ruta
-    },
-    // Aquí puedes añadir más rutas para otras vistas
-  ],
-})
+      path: '/views/game-board/:direction?',
+      name: 'GameBoardView',
+      component: GameBoardView
+    }
+  ]
+});
 
-export default router
+export default router;

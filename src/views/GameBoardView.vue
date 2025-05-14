@@ -1,6 +1,6 @@
 <template>
   <div id="game-board-view">
-    <div id="grid-game-board" class="board-y">
+    <div id="grid-game-board" :class="gridDirectionClass">
       <div v-for="(column, columnIndex) in tableroData" :key="columnIndex" class="group">
         <div v-for="cell in column" :key="cell.id" class="cell">
           <span v-if="cell.type === 'letter'" :id="cell.id" class="btn-ggb letter lock">
@@ -21,13 +21,26 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue"
+import { ref, onMounted, onUnmounted, computed } from "vue"
+import { useRoute } from "vue-router" // Importa useRoute
+
+const route = useRoute() // Obtén el objeto de la ruta actual
 
 const letters = ["B", "I", "N", "G", "O"]
 const numbersPerColumn = 15
 const tableroData = ref([])
 const markedBalls = ref([])
 const updateInterval = ref(null) // Referencia para el intervalo
+
+const direction = computed(() => route.params.direction) // Obtén el parámetro 'direction'
+
+const gridDirectionClass = computed(() => {
+  if (direction.value === 'x') {
+    return 'board-x';
+  } else {
+    return 'board-y'; // 'y' es el valor por defecto o para cualquier otra ruta
+  }
+});
 
 const generateTableroData = () => {
   const data = []

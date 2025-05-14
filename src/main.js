@@ -8,4 +8,7 @@ const app = createApp(App)
 
 app.use(router) // Usa el router
 
-app.mount("#app")
+// Espera a que la ruta esté lista antes de montar la aplicación
+router.isReady().then(() => {
+  app.mount("#app")
+})

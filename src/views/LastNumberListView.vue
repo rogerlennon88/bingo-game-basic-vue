@@ -56,35 +56,31 @@ onMounted(() => {
 /* last-number-list-view */
 #last-number-list-view {
   display: grid;
+  gap: var(--gap);
+}
+#last-number-list-view li{
+  display: flex;
 }
 .dir-x {
-  margin: 2vw;
   grid-auto-flow: column;
-  gap: 2vw;
+  grid-template-columns: repeat(4, 1fr);
 }
 .dir-y {
-  margin: 2vw;
   grid-auto-flow: row;
-  gap: 2vw;
+  grid-template-rows: repeat(4, 1fr);
 }
 .ball {
   background-color: white;
   color: rgb(25, 25, 112);
+  font-size: 12rem;
   font-weight: var(--fw-bold);
-  border-style: solid;
-  border-color: rgba(233, 220, 201, 0.75);
+  min-width: 180px;
+  padding: 16px;
+  border: 12px solid rgba(233, 220, 201, 0.75);
   border-radius: 100%;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.dir-x .item .ball {
-  font-size: 12vw;
-  border-width: 1vw;
-}
-.dir-y .item .ball {
-  font-size: 54vw;
-  border-width: 4vw;
 }
 </style>

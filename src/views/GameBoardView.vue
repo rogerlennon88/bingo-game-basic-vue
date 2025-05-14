@@ -1,5 +1,5 @@
 <template>
-  <div id="game-board-view" class="module">
+  <div id="game-board-view">
     <div id="grid-game-board" class="board-y">
       <div v-for="(column, columnIndex) in tableroData" :key="columnIndex" class="group">
         <div v-for="cell in column" :key="cell.id" class="cell">
@@ -74,30 +74,16 @@ onUnmounted(() => {
 <style scoped>
 /* game-board */
 #game-board-view {
-  background-color: rgb(36, 113, 163);
-  border-radius: 4px;
+  display: flex;
 }
 
 /* Grid Game Board */
 #grid-game-board {
+  background-color: rgb(36, 113, 163);
+  border: 8px solid rgb(36, 113, 163);
+  border-radius: 4px;
   display: grid;
   gap: 2px;
-}
-
-/* Horizontal Grid */
-#grid-game-board.board-x {
-  grid-template-rows: repeat(5, 1fr);
-}
-#grid-game-board.board-x .group {
-  grid-template-columns: repeat(16, 1fr);
-}
-
-/* Vertical Grid */
-#grid-game-board.board-y {
-  grid-template-columns: repeat(5, 1fr);
-}
-#grid-game-board.board-y .group {
-  grid-template-rows: repeat(16, 1fr);
 }
 
 /* Groups and Cells */
@@ -112,9 +98,9 @@ onUnmounted(() => {
 /* General Span (reemplaza Button) */
 #grid-game-board .btn-ggb {
   color: white;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: 3 / 2;
   border: none;
-  border-radius: 2px;
+  border-radius: calc(var(--gap) / 4);
   display: grid;
   place-items: center;
   user-select: none;
@@ -123,7 +109,7 @@ onUnmounted(() => {
 /* Letter Span */
 #grid-game-board .letter {
   background-color: rgb(84, 153, 199);
-  font-size: 3.2rem;
+  font-size: 3rem;
   font-weight: var(--fw-bold);
   padding: calc(var(--gap) / 2);
 }
@@ -132,7 +118,7 @@ onUnmounted(() => {
 #grid-game-board .num {
   background-color: rgb(251, 252, 252);
   color: rgb(52, 73, 94);
-  font-size: 2.4rem;
+  font-size: 3rem;
   font-weight: var(--fw-bold);
 }
 
@@ -156,15 +142,31 @@ onUnmounted(() => {
 
 /* Border Radius Grid Items */
 #grid-game-board .group:first-child .cell:first-child .btn-ggb {
-  border-top-left-radius: 4px;
+  border-top-left-radius: calc(var(--gap) / 2);
 }
 #grid-game-board .group:first-child .cell:last-child .btn-ggb {
-  border-bottom-left-radius: 4px;
+  border-bottom-left-radius: calc(var(--gap) / 2);
 }
 #grid-game-board .group:last-child .cell:first-child .btn-ggb {
-  border-top-right-radius: 4px;
+  border-top-right-radius: calc(var(--gap) / 2);
 }
 #grid-game-board .group:last-child .cell:last-child .btn-ggb {
-  border-bottom-right-radius: 4px;
+  border-bottom-right-radius: calc(var(--gap) / 2);
+}
+
+/* Horizontal Grid */
+#grid-game-board.board-x {
+  grid-template-rows: repeat(5, 1fr);
+}
+#grid-game-board.board-x .group {
+  grid-template-columns: repeat(16, 1fr);
+}
+
+/* Vertical Grid */
+#grid-game-board.board-y {
+  grid-template-columns: repeat(5, 1fr);
+}
+#grid-game-board.board-y .group {
+  grid-template-rows: repeat(16, 1fr);
 }
 </style>

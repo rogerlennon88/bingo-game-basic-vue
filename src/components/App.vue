@@ -1,27 +1,36 @@
 <!-- src/components/App.vue -->
 
 <template>
-  <header v-if="$route.path === '/'">
-    <section id="brand">
-      <img class="logo" src="/public/img/logo.png" alt="Aladdingo Logo" />
-    </section>
-    <section id="page-title">
-      <h1>Validador de Juego</h1>
-    </section>
-  </header>
-  <main v-if="$route.path === '/'" class="container game">
-    <router-view></router-view>
-  </main>
-  <router-view v-else></router-view>
+  <div id="container-app" :class="appClass">
+    <header v-if="$route.path === '/'">
+      <section id="brand">
+        <img class="logo" src="/public/img/logo.png" alt="Aladdingo Logo" />
+      </section>
+      <section id="page-title">
+        <h1>Validador de Juego</h1>
+      </section>
+    </header>
+    <main v-if="$route.path === '/'" class="container game">
+      <router-view></router-view>
+    </main>
+    <router-view v-else></router-view>
+  </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from "vue"
+import { useRoute } from "vue-router" // Importa useRoute
 import GameBoard from "./modules/GameBoard.vue"
 import LastNumber from "./modules/LastNumber.vue"
 import LastNumberList from "./modules/LastNumberList.vue"
 import GameMode from "./modules/GameMode.vue"
 import GameControls from "./modules/GameControls.vue"
+
+const route = useRoute() // Obtén la instancia de la ruta actual
+
+const appClass = computed(() => {
+  return route.path === "/" ? "home" : "view"
+})
 
 const balotasMarcadas = ref([])
 const loadedGamePattern = ref([])
@@ -135,4 +144,17 @@ const handlePatternChanged = (newPattern) => {
 onMounted(cargarDatosIniciales)
 </script>
 
-<style scoped></style>
+<style scoped>
+#container-app {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+}
+#container-app.home {
+  grid-template-rows: auto 1fr;
+}
+#container-app.view {
+  padding: calc(var(--gap) * 2);
+  place-items: baseline;
+}
+</style>

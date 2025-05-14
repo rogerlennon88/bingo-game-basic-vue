@@ -34,18 +34,19 @@ onMounted(() => {
 <style scoped>
 /* last-number-view */
 #last-number-view {
-  margin: 2vw;
-  aspect-ratio: 1 / 1;
   background-color: white;
   color: rgb(25, 25, 112);
-  font-size: 48vw;
+  font-size: 32rem;
   font-weight: var(--fw-bold);
-  border: 3vw solid rgba(233, 220, 201, 0.75);
+  width: 540px;
+  min-width: 128px;
+  padding: calc(var(--gap) * 2);
+  aspect-ratio: 1 / 1;
+  border: 32px solid rgba(233, 220, 201, 0.75);
   border-radius: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  min-width: 128px; /* Mantener el min-width si es necesario */
 }
 .ball {
   display: flex;

@@ -1,3 +1,12 @@
 {
-  "gamePattern": []
+  "gamePattern": [
+    "o1",
+    "g2",
+    "i4",
+    "b5",
+    "o5",
+    "g4",
+    "i2",
+    "b1"
+  ]
 }

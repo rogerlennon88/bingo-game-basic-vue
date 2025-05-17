@@ -11,7 +11,11 @@
             v-else-if="cell.type === 'number'"
             :id="cell.id"
             class="btn-ggb num"
-            :class="{ marked: isBalotaMarcada(cell.value), lock: isBalotaMarcada(cell.value) }"
+            :class="{
+              marked: isBalotaMarcada(cell.value) && !isAnimating(cell.value),
+              'marked-animating': isAnimating(cell.value),
+              lock: isBalotaMarcada(cell.value),
+            }"
           >
             {{ cell.value }}
           </span>
@@ -23,25 +27,27 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue"
-import { useRoute } from "vue-router" // Importa useRoute
+import { useRoute } from "vue-router"
 
-const route = useRoute() // Obtén el objeto de la ruta actual
+const route = useRoute()
 
 const letters = ["B", "I", "N", "G", "O"]
 const numbersPerColumn = 15
 const tableroData = ref([])
 const markedBalls = ref([])
-const updateInterval = ref(null) // Referencia para el intervalo
+const animatingBalls = ref([])
+const animationDuration = 2000 // Duración de la animación en milisegundos
+const updateInterval = ref(null)
 
-const direction = computed(() => route.params.direction) // Obtén el parámetro 'direction'
+const direction = computed(() => route.params.direction)
 
 const gridDirectionClass = computed(() => {
-  if (direction.value === 'x') {
-    return 'board-x';
+  if (direction.value === "x") {
+    return "board-x"
   } else {
-    return 'board-y'; // 'y' es el valor por defecto o para cualquier otra ruta
+    return "board-y"
   }
-});
+})
 
 const generateTableroData = () => {
   const data = []
@@ -60,6 +66,10 @@ const isBalotaMarcada = (balota) => {
   return markedBalls.value.includes(String(balota))
 }
 
+const isAnimating = (balota) => {
+  return animatingBalls.value.includes(String(balota))
+}
+
 const cargarDatosGameBoard = async () => {
   try {
     const response = await fetch("http://localhost:3000/api/game-board-data")
@@ -67,8 +77,20 @@ const cargarDatosGameBoard = async () => {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
     const data = await response.json()
-    markedBalls.value = data.markedBalls || []
-    // console.log("Datos del GameBoard actualizados en GameBoardView:", markedBalls.value)
+    const newMarkedBalls = data.markedBalls || []
+
+    // Identificar las nuevas balotas marcadas para la animación
+    newMarkedBalls.forEach((ball) => {
+      if (!markedBalls.value.includes(ball) && !animatingBalls.value.includes(ball)) {
+        animatingBalls.value.push(ball)
+        // Remover la balota de la lista de animación después de la duración
+        setTimeout(() => {
+          animatingBalls.value = animatingBalls.value.filter((b) => b !== ball)
+        }, animationDuration)
+      }
+    })
+
+    markedBalls.value = newMarkedBalls
   } catch (error) {
     console.error("Error al cargar los datos del GameBoard:", error)
   }
@@ -76,12 +98,12 @@ const cargarDatosGameBoard = async () => {
 
 onMounted(() => {
   generateTableroData()
-  cargarDatosGameBoard() // Cargar los datos iniciales
-  updateInterval.value = setInterval(cargarDatosGameBoard, 1000) // Establecer el intervalo de actualización (cada 1 segundo)
+  cargarDatosGameBoard()
+  updateInterval.value = setInterval(cargarDatosGameBoard, 1000)
 })
 
 onUnmounted(() => {
-  clearInterval(updateInterval.value) // Limpiar el intervalo cuando el componente se desmonta
+  clearInterval(updateInterval.value)
 })
 </script>
 
@@ -106,6 +128,9 @@ onUnmounted(() => {
   gap: 2px;
 }
 #grid-game-board .cell {
+  background-color: rgb(250, 213, 165);
+  border-radius: calc(var(--gap) / 4);
+  box-shadow: inset 0 0 8px 1px rgb(204, 85, 0);
   display: grid;
 }
 
@@ -154,17 +179,37 @@ onUnmounted(() => {
   box-shadow: inset 0 0 8px 1px rgba(0, 0, 0, 0.5);
 }
 
+/* Animación destellante */
+@keyframes blink {
+  50% {
+    background-color: rgb(255, 213, 128);
+    color: rgb(192, 64, 0);
+    text-shadow: 2px 2px 2px rgb(255, 253, 208);
+    box-shadow: inset 0 0 16px 1px rgb(255, 95, 31);
+  }
+}
+
+#grid-game-board .num.marked-animating {
+  background-color: rgb(233, 116, 81); /* Un color llamativo para la animación */
+  color: white;
+  animation: blink 1s ease-in-out 2; /* Destella 2 veces */
+}
+
 /* Border Radius Grid Items */
-#grid-game-board .group:first-child .cell:first-child .btn-ggb {
+#grid-game-board .group:first-child .cell:first-child .btn-ggb,
+#grid-game-board .group:first-child .cell {
   border-top-left-radius: calc(var(--gap) / 2);
 }
-#grid-game-board .group:first-child .cell:last-child .btn-ggb {
+#grid-game-board .group:first-child .cell:last-child .btn-ggb,
+#grid-game-board .group:first-child .cell {
   border-bottom-left-radius: calc(var(--gap) / 2);
 }
-#grid-game-board .group:last-child .cell:first-child .btn-ggb {
+#grid-game-board .group:last-child .cell:first-child .btn-ggb,
+#grid-game-board .group:last-child .cell {
   border-top-right-radius: calc(var(--gap) / 2);
 }
-#grid-game-board .group:last-child .cell:last-child .btn-ggb {
+#grid-game-board .group:last-child .cell:last-child .btn-ggb,
+#grid-game-board .group:last-child .cell {
   border-bottom-right-radius: calc(var(--gap) / 2);
 }
 

@@ -118,17 +118,55 @@ const handleMarcarBalota = async (balota) => {
   if (!isMarked) {
     balotasMarcadas.value.unshift(balotaString)
     console.log(`Balota marcada en App.vue: ${balotaString}`)
-    await guardarDatosGameBoard()
-    await cargarDatosGameBoard()
+    await guardarDatosGameBoard();
+    await cargarDatosGameBoard();
+    await actualizarContador();
   }
-}
+};
+
+const actualizarContador = async () => {
+  try {
+    const response = await fetch("http://localhost:3000/api/game-board-data/counter", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("HTTP error! status: ${response.status}");
+    }
+    const result = await response.json();
+    console.log("Contador actualizado correctamente:", result.message);
+  } catch (error) {
+    console.error("Error al actualizar el contador:", error);
+  }
+};
 
 const handleReiniciarGameBoard = async () => {
   console.log("Manejando el evento de reiniciar tablero en App.vue...")
   balotasMarcadas.value = [] // Limpiar las balotas marcadas en el cliente
   await guardarDatosGameBoard({ markedBalls: [] }) // Limpiar en el backend
   await cargarDatosGameBoard() // Recargar el estado inicial del GameBoard
+  await resetearContador()
 }
+
+const resetearContador = async () => {
+  try {
+    const response = await fetch("http://localhost:3000/api/game-board-data/counter/reset", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("HTTP error! status: ${response.status}");
+    }
+    const result = await response.json();
+    console.log("Contador reseteado correctamente:", result.message);
+  } catch (error) {
+    console.error("Error al resetear el contador:", error);
+  }
+};
 
 const handleReiniciarGameMode = async () => {
   console.log("Manejando el evento de reiniciar modo en App.vue...")

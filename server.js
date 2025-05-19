@@ -34,14 +34,47 @@ app.get("/api/game-board-data", async (req, res) => {
 app.put("/api/game-board-data", async (req, res) => {
   try {
     const filePath = path.join(__dirname, "data-game-board.json")
-    const gameData = JSON.stringify({ markedBalls: req.body.markedBalls }, null, 2)
-    await fs.writeFile(filePath, gameData, { encoding: "utf8", flag: "w" }) // Especificar encoding y flag de escritura
-    res.json({ message: "Datos del tablero de juego guardados correctamente" })
+    const fileContent = await fs.readFile(filePath, "utf8");
+    const gameData = JSON.parse(fileContent);
+    gameData.markedBalls = req.body.markedBalls;
+    const gameDataString = JSON.stringify(gameData, null, 2);
+    await fs.writeFile(filePath, gameDataString, { encoding: "utf8", flag: "w" }); // Especificar encoding y flag de escritura
+    res.json({ message: "Datos del tablero de juego guardados correctamente" });
   } catch (error) {
-    console.error("Error al guardar en data-game-board.json:", error)
-    res.status(500).json({ error: "Error al guardar los datos del tablero de juego" })
+    console.error("Error al guardar en data-game-board.json:", error);
+    res.status(500).json({ error: "Error al guardar los datos del tablero de juego" });
   }
-})
+});
+
+app.put("/api/game-board-data/counter", async (req, res) => {
+  try {
+    const filePath = path.join(__dirname, "data-game-board.json");
+    const fileContent = await fs.readFile(filePath, "utf8");
+    const gameData = JSON.parse(fileContent);
+    gameData.counter = (gameData.counter || 0) + 1;
+    const gameDataString = JSON.stringify(gameData, null, 2);
+    await fs.writeFile(filePath, gameDataString, { encoding: "utf8", flag: "w" });
+    res.json({ message: "Contador actualizado correctamente" });
+  } catch (error) {
+    console.error("Error al actualizar el contador en data-game-board.json:", error);
+    res.status(500).json({ error: "Error al actualizar el contador" });
+  }
+});
+
+app.put("/api/game-board-data/counter/reset", async (req, res) => {
+  try {
+    const filePath = path.join(__dirname, "data-game-board.json");
+    const fileContent = await fs.readFile(filePath, "utf8");
+    const gameData = JSON.parse(fileContent);
+    gameData.counter = 0;
+    const gameDataString = JSON.stringify(gameData, null, 2);
+    await fs.writeFile(filePath, gameDataString, { encoding: "utf8", flag: "w" });
+    res.json({ message: "Contador reseteado correctamente" });
+  } catch (error) {
+    console.error("Error al resetear el contador en data-game-board.json:", error);
+    res.status(500).json({ error: "Error al resetear el contador" });
+  }
+});
 
 // Rutas para GameMode data
 app.get("/api/game-mode-data", async (req, res) => {

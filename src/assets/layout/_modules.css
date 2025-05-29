@@ -6,6 +6,7 @@
   border: 1px solid white;
   border-radius: calc(var(--gap) / 2);
   display: grid;
+  grid-auto-rows: max-content;
   gap: var(--gap);
-  place-content: center;
+  place-items: center;
 }

@@ -5,7 +5,10 @@
   </section>
   <section class="block">
     <GameMode ref="gameModeRef" :initialPattern="loadedGamePattern" @pattern-changed="handlePatternChanged"></GameMode>
-    <LastNumber :markedBalls="balotasMarcadas"></LastNumber>
+    <div class="stack">
+      <LastNumber :markedBalls="balotasMarcadas"></LastNumber>
+      <Counter />
+    </div>
     <LastNumberList :markedBalls="balotasMarcadas"></LastNumberList>
     <GameControls
       @reiniciar-juego="handleReiniciarGameBoard"
@@ -22,6 +25,7 @@ import GameBoard from "../components/modules/GameBoard.vue"
 import LastNumber from "../components/modules/LastNumber.vue"
 import LastNumberList from "../components/modules/LastNumberList.vue"
 import GameMode from "../components/modules/GameMode.vue"
+import Counter from "../components/modules/Counter.vue"
 import GameControls from "../components/modules/GameControls.vue"
 
 const balotasMarcadas = ref([])
@@ -110,9 +114,9 @@ const handleMarcarBalota = async (balota) => {
   if (!isMarked) {
     balotasMarcadas.value.unshift(balotaString)
     console.log(`Balota marcada en GameView.vue: ${balotaString}`)
-    await guardarDatosGameBoard();
-    await cargarDatosGameBoard();
-    await actualizarContador();
+    await guardarDatosGameBoard()
+    await cargarDatosGameBoard()
+    await actualizarContador()
   }
 }
 
@@ -123,16 +127,16 @@ const actualizarContador = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    })
     if (!response.ok) {
-      throw new Error("HTTP error! status: ${response.status}");
+      throw new Error("HTTP error! status: ${response.status}")
     }
-    const result = await response.json();
-    console.log("Contador actualizado correctamente:", result.message);
+    const result = await response.json()
+    console.log("Contador actualizado correctamente:", result.message)
   } catch (error) {
-    console.error("Error al actualizar el contador:", error);
+    console.error("Error al actualizar el contador:", error)
   }
-};
+}
 
 const handleReiniciarGameBoard = async () => {
   console.log("Manejando el evento de reiniciar tablero en GameView.vue...")
@@ -149,16 +153,16 @@ const resetearContador = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    })
     if (!response.ok) {
-      throw new Error("HTTP error! status: ${response.status}");
+      throw new Error("HTTP error! status: ${response.status}")
     }
-    const result = await response.json();
-    console.log("Contador reseteado correctamente:", result.message);
+    const result = await response.json()
+    console.log("Contador reseteado correctamente:", result.message)
   } catch (error) {
-    console.error("Error al resetear el contador:", error);
+    console.error("Error al resetear el contador:", error)
   }
-};
+}
 
 const handleReiniciarGameMode = async () => {
   console.log("Manejando el evento de reiniciar modo en GameView.vue...")

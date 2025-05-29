@@ -24,6 +24,7 @@ import GameBoard from "./modules/GameBoard.vue"
 import LastNumber from "./modules/LastNumber.vue"
 import LastNumberList from "./modules/LastNumberList.vue"
 import GameMode from "./modules/GameMode.vue"
+import Counter from "./modules/Counter.vue"
 import GameControls from "./modules/GameControls.vue"
 
 const route = useRoute() // Obtén la instancia de la ruta actual

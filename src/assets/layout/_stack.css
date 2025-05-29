@@ -1,0 +1,7 @@
+/* src/assets/layout/_group.css */
+
+.stack {
+  display: grid;
+  grid-auto-flow: column;
+  gap: calc(var(--gap) * 2);
+}

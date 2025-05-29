@@ -39,7 +39,6 @@ onMounted(() => {
   font-size: 32rem;
   font-weight: var(--fw-bold);
   width: 540px;
-  min-width: 128px;
   padding: calc(var(--gap) * 2);
   aspect-ratio: 1 / 1;
   border: 32px solid rgba(233, 220, 201, 0.75);

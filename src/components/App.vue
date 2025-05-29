@@ -119,11 +119,11 @@ const handleMarcarBalota = async (balota) => {
   if (!isMarked) {
     balotasMarcadas.value.unshift(balotaString)
     console.log(`Balota marcada en App.vue: ${balotaString}`)
-    await guardarDatosGameBoard();
-    await cargarDatosGameBoard();
-    await actualizarContador();
+    await guardarDatosGameBoard()
+    await cargarDatosGameBoard()
+    await actualizarContador()
   }
-};
+}
 
 const actualizarContador = async () => {
   try {
@@ -132,16 +132,16 @@ const actualizarContador = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    })
     if (!response.ok) {
-      throw new Error("HTTP error! status: ${response.status}");
+      throw new Error("HTTP error! status: ${response.status}")
     }
-    const result = await response.json();
-    console.log("Contador actualizado correctamente:", result.message);
+    const result = await response.json()
+    console.log("Contador actualizado correctamente:", result.message)
   } catch (error) {
-    console.error("Error al actualizar el contador:", error);
+    console.error("Error al actualizar el contador:", error)
   }
-};
+}
 
 const handleReiniciarGameBoard = async () => {
   console.log("Manejando el evento de reiniciar tablero en App.vue...")
@@ -158,16 +158,16 @@ const resetearContador = async () => {
       headers: {
         "Content-Type": "application/json",
       },
-    });
+    })
     if (!response.ok) {
-      throw new Error("HTTP error! status: ${response.status}");
+      throw new Error("HTTP error! status: ${response.status}")
     }
-    const result = await response.json();
-    console.log("Contador reseteado correctamente:", result.message);
+    const result = await response.json()
+    console.log("Contador reseteado correctamente:", result.message)
   } catch (error) {
-    console.error("Error al resetear el contador:", error);
+    console.error("Error al resetear el contador:", error)
   }
-};
+}
 
 const handleReiniciarGameMode = async () => {
   console.log("Manejando el evento de reiniciar modo en App.vue...")
@@ -193,6 +193,9 @@ onMounted(cargarDatosIniciales)
   grid-template-rows: auto 1fr;
 }
 #container-app.view {
+  /* background-color: bisque; */
+  width: 1920px;
+  height: 1080px;
   padding: calc(var(--gap) * 2);
   place-items: baseline;
 }

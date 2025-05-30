@@ -6,6 +6,7 @@ import LastNumberListView from '../views/LastNumberListView.vue';
 import GameBoardView from '../views/GameBoardView.vue';
 import GameModeView from '../views/GameModeView.vue';
 import CounterView from '../views/CounterView.vue'; // Importa CounterView
+import MainObsFullHdView from '../views/MainObsFullHdView.vue';
 
 const router = createRouter({
   history: createWebHistory(),
@@ -39,6 +40,11 @@ const router = createRouter({
       path: '/views/counter',
       name: 'CounterView',
       component: CounterView
+    },
+    {
+      path: '/views/main-obs-fullhd',
+      name: 'MainObsFullHdView',
+      component: MainObsFullHdView
     }
   ]
 });

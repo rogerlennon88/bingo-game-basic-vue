@@ -2,14 +2,16 @@
   <div id="main-obs-fullhd-view">
     <section id="main-obs-fullhd--game-board">
       <div id="game-board-mofv-view">
+        <div id="header-game-board-mofv">
+          <span v-for="column in tableroData" :key="column[0].id" class="cell letter">
+            {{ column[0].value }}
+          </span>
+        </div>
         <div id="grid-game-board-mofv" :class="gridDirectionClass">
-          <div v-for="(column, columnIndex) in tableroData" :key="columnIndex" class="group">
-            <div v-for="cell in column" :key="cell.id" class="cell">
-              <span v-if="cell.type === 'letter'" :id="cell.id" class="btn-ggb letter lock">
-                {{ cell.value }}
-              </span>
+          <div v-for="column in tableroData" :key="column[0].id" class="group">
+            <div v-for="cell in column.slice(1)" :key="cell.id" class="cell">
               <span
-                v-else-if="cell.type === 'number'"
+                v-if="cell.type === 'number'"
                 :id="cell.id"
                 class="btn-ggb num"
                 :class="{
@@ -137,4 +139,5 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+</style>

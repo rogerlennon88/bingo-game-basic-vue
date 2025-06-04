@@ -1,7 +1,7 @@
 /* General */
 
 #main-obs-fullhd-view {
-  background-color: #FBC200;
+  background-color: #fbc200;
   font-family: "Aktiv Grotesk Ex Trial XBold", Arial, sans-serif;
   /* font-size: 12rem; */
   width: 100%;
@@ -77,9 +77,9 @@
   position: relative;
 }
 #main-obs-fullhd-view .score .score--title {
-  background-color: #66033E;
+  background-color: #66033e;
   color: #fff;
-  font-size: 3.2rem ;
+  font-size: 3.2rem;
   text-transform: uppercase;
   text-align: right;
   padding: 20px;
@@ -87,7 +87,9 @@
 #main-obs-fullhd-view .score .score--body {
   padding: 20px;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  align-items: end;
+  grid-template-areas: "ln ln lnl lnl lnl";
+  gap: 10px;
   position: absolute;
   top: 0;
   right: 0;

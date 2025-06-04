@@ -44,6 +44,11 @@
             <div id="last-number-mofv-view" class="ball">
               {{ lastNumber }}
             </div>
+            <ul id="last-number-list-mofv-view">
+              <li class="item" v-for="i in 3" :key="i">
+                <span class="ball">{{ displayedNumbers[i] || "" }}</span>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
@@ -71,6 +76,16 @@ const route = useRoute()
 const markedBalls = ref([])
 const lastNumber = computed(() => {
   return markedBalls.value.length > 0 ? markedBalls.value[0] : ""
+})
+
+const displayedNumbers = computed(() => {
+  const result = { 1: "", 2: "", 3: "", 4: "" }
+  for (let i = 1; i <= 4; i++) {
+    if (markedBalls.value.length > i) {
+      result[i] = markedBalls.value[i]
+    }
+  }
+  return result
 })
 
 const letters = ["B", "I", "N", "G", "O"]

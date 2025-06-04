@@ -35,7 +35,7 @@
     </section>
     <section id="main-obs-fullhd--group">
       <section id="main-obs-fullhd--display-ads">
-        <div class="display-ads">display-ads</div>
+        <div class="display-ads ck">display-ads</div>
       </section>
       <section id="main-obs-fullhd--score">
         <div class="score">

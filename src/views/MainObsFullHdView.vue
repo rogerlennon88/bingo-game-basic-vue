@@ -40,7 +40,11 @@
       <section id="main-obs-fullhd--score">
         <div class="score">
           <h3 class="score--title">Últimas Balotas</h3>
-          <div class="score--body"></div>
+          <div class="score--body">
+            <div id="last-number-mofv-view" class="ball">
+              {{ lastNumber }}
+            </div>
+          </div>
         </div>
       </section>
     </section>
@@ -59,14 +63,19 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed } from "vue"
 import { useRoute } from "vue-router"
+import LastNumber from "../components/modules/LastNumber.vue"
 import "../assets/view-styles/main-obs-fullhd/main.css"
 
 const route = useRoute()
 
+const markedBalls = ref([])
+const lastNumber = computed(() => {
+  return markedBalls.value.length > 0 ? markedBalls.value[0] : ""
+})
+
 const letters = ["B", "I", "N", "G", "O"]
 const numbersPerColumn = 15
 const tableroData = ref([])
-const markedBalls = ref([])
 const animatingBalls = ref([])
 const animationDuration = 2000 // Duración de la animación en milisegundos
 const updateInterval = ref(null)
@@ -139,5 +148,4 @@ onUnmounted(() => {
 })
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

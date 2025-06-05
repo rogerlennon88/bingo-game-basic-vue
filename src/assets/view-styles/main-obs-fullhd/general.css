@@ -105,7 +105,6 @@
 }
 
 #main-obs-fullhd-view .ball {
-  line-height: 0.9;
   border-radius: 100%;
   aspect-ratio: 1 / 1;
   display: flex;
@@ -119,34 +118,36 @@
   color: transparent;
 }
 
+.ball- {
+  background: linear-gradient(to bottom, #add8e6, #87ceeb); /* Azul claro */
+  background-image: url("../../../../public/views-media/main-obs-fullhd/ball-empty.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
 .ball-b {
   background: linear-gradient(to bottom, #add8e6, #87ceeb); /* Azul claro */
   background-image: url("../../../../public/views-media/main-obs-fullhd/ball-b.png");
   background-repeat: no-repeat;
   background-size: contain;
 }
-
 .ball-i {
   background: linear-gradient(to bottom, #f08080, #cd5c5c); /* Rojo claro */
   background-image: url("../../../../public/views-media/main-obs-fullhd/ball-i.png");
   background-repeat: no-repeat;
   background-size: contain;
 }
-
 .ball-n {
   background: linear-gradient(to bottom, #f08080, #cd5c5c); /* Rojo claro */
   background-image: url("../../../../public/views-media/main-obs-fullhd/ball-n.png");
   background-repeat: no-repeat;
   background-size: contain;
 }
-
 .ball-g {
   background: linear-gradient(to bottom, #f08080, #cd5c5c); /* Rojo claro */
   background-image: url("../../../../public/views-media/main-obs-fullhd/ball-g.png");
   background-repeat: no-repeat;
   background-size: contain;
 }
-
 .ball-o {
   background: linear-gradient(to bottom, #f08080, #cd5c5c); /* Rojo claro */
   background-image: url("../../../../public/views-media/main-obs-fullhd/ball-o.png");

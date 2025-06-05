@@ -1,5 +1,7 @@
 /* last-number-list-mofv-view */
 #last-number-list-mofv-view {
+  background-color: white;
+  line-height: 0.85;
   width: 100%;
   align-self: end;
   display: grid;

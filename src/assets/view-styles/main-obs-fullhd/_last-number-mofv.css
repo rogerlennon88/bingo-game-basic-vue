@@ -1,6 +1,7 @@
 /* last-number-mofv-view */
 #last-number-mofv-view {
   background-color: white;
+  line-height: 0.8;
   border: 10px solid rgb(255, 255, 255);
 }
 #last-number-mofv-view .mofv-letter {
@@ -8,5 +9,5 @@
   text-transform: uppercase;
 }
 #last-number-mofv-view .mofv-number {
-  font-size: 8rem;
+  font-size: 6.8rem;
 }

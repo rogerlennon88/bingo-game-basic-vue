@@ -41,12 +41,16 @@
         <div class="score">
           <h3 class="score--title">Últimas Balotas</h3>
           <div class="score--body">
-            <div id="last-number-mofv-view" class="ball">
-              {{ lastNumber }}
+            <div id="last-number-mofv-view" class="ball" :class="'ball-' + getColumnLetter(lastNumber)">
+              <span class="mofv-letter">{{ getColumnLetter(lastNumber) }}</span>
+              <span class="mofv-number">{{ lastNumber }}</span>
             </div>
             <ul id="last-number-list-mofv-view">
               <li class="item" v-for="i in 3" :key="i">
-                <span class="ball">{{ displayedNumbers[i] || "" }}</span>
+                <span class="ball" :class="'ball-' + getColumnLetter(displayedNumbers[i])">
+                  <span class="mofv-letter">{{ getColumnLetter(displayedNumbers[i]) }}</span>
+                  <span class="mofv-number">{{ displayedNumbers[i] || "" }}</span>
+                </span>
               </li>
             </ul>
           </div>
@@ -77,6 +81,15 @@ const markedBalls = ref([])
 const lastNumber = computed(() => {
   return markedBalls.value.length > 0 ? markedBalls.value[0] : ""
 })
+
+const getColumnLetter = (ballNumber) => {
+  if (ballNumber >= 1 && ballNumber <= 15) return "b"
+  if (ballNumber >= 16 && ballNumber <= 30) return "i"
+  if (ballNumber >= 31 && ballNumber <= 45) return "n"
+  if (ballNumber >= 46 && ballNumber <= 60) return "g"
+  if (ballNumber >= 61 && ballNumber <= 75) return "o"
+  return ""
+}
 
 const displayedNumbers = computed(() => {
   const result = { 1: "", 2: "", 3: "" }

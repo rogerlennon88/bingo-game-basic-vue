@@ -2,6 +2,9 @@
 
 #main-obs-fullhd-view {
   background-color: #fbc200;
+  background-image: url("../../../../public/views-media/main-obs-fullhd/main.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
   font-family: "Aktiv Grotesk Ex Trial XBold", Arial, sans-serif;
   /* font-size: 12rem; */
   width: 100%;
@@ -81,18 +84,34 @@
   font-size: 3.2rem;
   text-transform: uppercase;
   text-align: right;
-  padding: 20px;
+  padding: 20px 80px;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
 }
 #main-obs-fullhd-view .score .score--body {
+  color: #2c2c2c;
   padding: 20px;
-  display: grid;
-  align-items: end;
-  grid-template-areas: "ln ln lnl lnl lnl";
-  gap: 10px;
+  display: flex;
+  /* gap: 10px; */
   position: absolute;
+  top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+  z-index: 5;
+}
+
+#main-obs-fullhd-view .ball {
+  line-height: 0.9;
+  border-radius: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
 #main-obs-fullhd-view .ck {
@@ -100,5 +119,37 @@
   color: transparent;
 }
 
-.test-font {
+.ball-b {
+  background: linear-gradient(to bottom, #add8e6, #87ceeb); /* Azul claro */
+  background-image: url("../../../../public/views-media/main-obs-fullhd/ball-b.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.ball-i {
+  background: linear-gradient(to bottom, #f08080, #cd5c5c); /* Rojo claro */
+  background-image: url("../../../../public/views-media/main-obs-fullhd/ball-i.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.ball-n {
+  background: linear-gradient(to bottom, #f08080, #cd5c5c); /* Rojo claro */
+  background-image: url("../../../../public/views-media/main-obs-fullhd/ball-n.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.ball-g {
+  background: linear-gradient(to bottom, #f08080, #cd5c5c); /* Rojo claro */
+  background-image: url("../../../../public/views-media/main-obs-fullhd/ball-g.png");
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+.ball-o {
+  background: linear-gradient(to bottom, #f08080, #cd5c5c); /* Rojo claro */
+  background-image: url("../../../../public/views-media/main-obs-fullhd/ball-o.png");
+  background-repeat: no-repeat;
+  background-size: contain;
 }

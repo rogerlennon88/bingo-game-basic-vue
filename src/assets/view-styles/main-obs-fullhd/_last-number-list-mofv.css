@@ -1,9 +1,10 @@
 /* last-number-list-mofv-view */
 #last-number-list-mofv-view {
-  grid-area: lnl;
+  width: 100%;
+  align-self: end;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+  /* gap: 10px; */
 }
 #last-number-list-mofv-view li {
   display: flex;
@@ -16,17 +17,19 @@
   grid-auto-flow: row;
   grid-template-rows: repeat(4, 1fr);
 }
-.ball {
-  background-color: white;
-  color: rgb(25, 25, 112);
-  font-size: 4.8rem;
-  font-weight: var(--fw-bold);
+
+#last-number-list-mofv-view .ball {
   width: 100%;
   padding: 16px;
-  border: 10px solid rgba(233, 220, 201, 0.75);
-  border-radius: 100%;
-  aspect-ratio: 1 / 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 5px solid rgb(255, 255, 255);
+}
+
+#last-number-list-mofv-view .mofv-letter {
+  font-size: 1.6rem;
+  text-transform: uppercase;
+}
+
+#last-number-list-mofv-view .mofv-number {
+  font-size: 4rem;
+  text-transform: uppercase;
 }

@@ -3,6 +3,7 @@
   background-color: white;
   color: rgb(25, 25, 112);
   font-size: 8rem;
+  min-height: 100%;
   padding: calc(var(--gap) * 2);
   aspect-ratio: 1 / 1;
   border: 10px solid rgba(233, 220, 201, 0.75);

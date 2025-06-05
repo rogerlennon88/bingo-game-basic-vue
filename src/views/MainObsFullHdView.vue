@@ -79,8 +79,8 @@ const lastNumber = computed(() => {
 })
 
 const displayedNumbers = computed(() => {
-  const result = { 1: "", 2: "", 3: "", 4: "" }
-  for (let i = 1; i <= 4; i++) {
+  const result = { 1: "", 2: "", 3: "" }
+  for (let i = 1; i <= 3; i++) {
     if (markedBalls.value.length > i) {
       result[i] = markedBalls.value[i]
     }

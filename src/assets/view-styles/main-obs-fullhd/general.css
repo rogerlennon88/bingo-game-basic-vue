@@ -35,13 +35,12 @@
 #main-obs-fullhd-view #main-obs-fullhd--group {
   grid-area: 6 / 5 / 7 span / 5 span;
   display: grid;
+  grid-template-rows: 1fr 1fr;
   gap: 20px;
 }
 #main-obs-fullhd-view #main-obs-fullhd--display-ads {
-  /* grid-area: 10 / 5 / 3 span / 5 span; */
 }
 #main-obs-fullhd-view #main-obs-fullhd--score {
-  /* grid-area: 6 / 5 / 4 span / 5 span; */
 }
 #main-obs-fullhd-view #main-obs-fullhd--prize-info {
   grid-area: 6 / 10 / 2 span / 3 span;
@@ -91,7 +90,6 @@
   grid-template-areas: "ln ln lnl lnl lnl";
   gap: 10px;
   position: absolute;
-  top: 0;
   right: 0;
   bottom: 0;
   left: 0;

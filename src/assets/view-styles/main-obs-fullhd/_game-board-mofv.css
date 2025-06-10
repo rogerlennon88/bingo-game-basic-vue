@@ -1,6 +1,10 @@
 /* GameBoard Styles */
 
 #game-board-mofv-view {
+  /* background-color: aqua !important; */
+  background-image: url("../../../../public/views-media/main-obs-fullhd/bg-rays-game-board.png");
+  background-repeat: no-repeat;
+  background-size: cover;
   width: 100%;
   height: 100%;
   display: grid;

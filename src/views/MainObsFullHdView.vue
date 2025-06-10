@@ -58,13 +58,13 @@
       </section>
     </section>
     <section id="main-obs-fullhd--prize-info">
-      <div class="prize-info">
+      <div class="prize-info ck">
         <h3 class="prize-info--title">Premio:</h3>
         <div class="prize-info--description">$10.000.000</div>
       </div>
     </section>
     <section id="main-obs-fullhd--game-mode">
-      <div class="game-mode">game-mode</div>
+      <div class="game-mode ck">game-mode</div>
     </section>
   </div>
 </template>

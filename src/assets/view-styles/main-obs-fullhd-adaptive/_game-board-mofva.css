@@ -1,0 +1,133 @@
+/* GameBoard Styles */
+
+#game-board-mofva-view {
+  /* background-color: aqua !important; */
+  background-image: url("../../../../public/views-media/main-obs-fullhd-adaptive/bg-rays-game-board.png");
+  background-repeat: no-repeat;
+  background-size: cover;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  justify-content: center;
+  grid-template-rows: auto 1fr;
+}
+
+#header-game-board-mofva {
+  padding-bottom: 8px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 3px;
+}
+
+#header-game-board-mofva .cell {
+  background-color: inherit;
+  background-image: url("../../../../public/views-media/main-obs-fullhd-adaptive/bg-btn-letter.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: rgba(100, 4, 63, 1);
+  font-size: 6rem;
+  display: grid;
+  place-items: center;
+}
+
+/* Grid Game Board */
+#grid-game-board-mofva {
+  background-color: #64043f;
+  border-radius: 20px;
+  border: 3px solid #64043f;
+  display: grid;
+  grid-auto-flow: column;
+  gap: 3px;
+  overflow: hidden;
+}
+
+#grid-game-board-mofva .cell {
+  display: grid;
+  overflow: hidden;
+}
+
+/* Groups and Cells */
+#grid-game-board-mofva .group {
+  display: grid;
+  gap: 3px;
+}
+
+/* General Span (reemplaza Button) */
+#grid-game-board-mofva .btn-ggb {
+  color: rgba(100, 4, 63, 0.5);
+  aspect-ratio: 3 / 2;
+  border: none;
+  /* border-radius: calc(var(--gap) / 4); */
+  display: grid;
+  place-items: center;
+  user-select: none;
+}
+
+/* Letter Span */
+#grid-game-board-mofva .letter {
+  /* font-size: 3rem; */
+  font-weight: var(--fw-bold);
+  /* padding: calc(var(--gap) / 2); */
+  display: none;
+}
+
+/* Number Span */
+#grid-game-board-mofva .num {
+  background-color: rgb(251, 252, 252);
+  /* color: rgb(52, 73, 94); */
+  font-size: 3.2rem;
+  font-weight: var(--fw-bold);
+}
+
+/* Letter Span Status */
+#grid-game-board-mofva .letter.marked {
+  background-color: rgb(70, 130, 180);
+  color: rgba(250, 249, 246, 0.32);
+  text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.16);
+  cursor: default;
+  box-shadow: inset 0 0 8px 1px rgba(8, 24, 168, 0.5);
+}
+
+/* Number Span Status */
+#grid-game-board-mofva .num.marked {
+  /* background-color: rgb(193, 154, 107); */
+  background-image: url("../../../../public/views-media/main-obs-fullhd-adaptive/bg-btn-num.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 72%;
+  color: #fdfefe;
+  cursor: default;
+}
+
+/* Animación destellante */
+@keyframes blink {
+  50% {
+    background-color: rgb(255, 213, 128);
+    color: rgb(192, 64, 0);
+    text-shadow: 2px 2px 2px rgb(255, 253, 208);
+    box-shadow: inset 0 0 16px 1px rgb(255, 95, 31);
+  }
+}
+
+#grid-game-board-mofva .num.marked-animating {
+  background-color: rgb(233, 116, 81); /* Un color llamativo para la animación */
+  color: white;
+  animation: blink 1s ease-in-out 2; /* Destella 2 veces */
+}
+
+#grid-game-board-mofva .group .cell:first-child {
+  background-color: inherit;
+  border: none;
+  box-shadow: inherit;
+}
+#grid-game-board-mofva .group:first-child {
+  /* background-color: aqua !important; */
+  /* border-width: 32px; */
+}
+#grid-game-board-mofva .group:first-child .cell:nth-child(2) {
+  /* border-top-left-radius: 16px; */
+}
+#grid-game-board-mofva .group:last-child .cell:nth-child(2) {
+  /* border-top-right-radius: 16px; */
+}

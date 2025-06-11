@@ -1,8 +1,8 @@
 /* General */
 
-#main-obs-fullhd-view {
+#main-obs-fullhd-adaptive-view {
   background-color: #fbc200;
-  background-image: url("../../../../public/views-media/main-obs-fullhd/bg-main.jpg");
+  background-image: url("../../../../public/views-media/main-obs-fullhd-adaptive/bg-main.jpg");
   background-repeat: no-repeat;
   background-size: cover;
   font-family: "Aktiv Grotesk Ex Trial XBold", Arial, sans-serif;
@@ -16,43 +16,43 @@
   gap: 20px;
 }
 
-#main-obs-fullhd-view section {
+#main-obs-fullhd-adaptive-view section {
   display: grid;
 }
 
-#main-obs-fullhd-view section > div {
+#main-obs-fullhd-adaptive-view section > div {
   padding: 20px;
   background-color: #e5004d;
   border-radius: 16px;
 }
 
-#main-obs-fullhd-view #main-obs-fullhd--game-board {
+#main-obs-fullhd-adaptive-view #main-obs-fullhd-adaptive--game-board {
   grid-area: 12 span / 4 span;
 }
-#main-obs-fullhd-view #main-obs-fullhd--ball-cam {
+#main-obs-fullhd-adaptive-view #main-obs-fullhd-adaptive--ball-cam {
   grid-area: 5 span / 3 span;
 }
-#main-obs-fullhd-view #main-obs-fullhd--studio-cam {
+#main-obs-fullhd-adaptive-view #main-obs-fullhd-adaptive--studio-cam {
   grid-area: 5 span / 5 span;
 }
-#main-obs-fullhd-view #main-obs-fullhd--group {
+#main-obs-fullhd-adaptive-view #main-obs-fullhd-adaptive--group {
   grid-area: 6 / 5 / 7 span / 5 span;
   display: grid;
   grid-template-rows: 1fr 1fr;
   gap: 20px;
 }
-#main-obs-fullhd-view #main-obs-fullhd--display-ads {
+#main-obs-fullhd-adaptive-view #main-obs-fullhd-adaptive--display-ads {
 }
-#main-obs-fullhd-view #main-obs-fullhd--score {
+#main-obs-fullhd-adaptive-view #main-obs-fullhd-adaptive--score {
 }
-#main-obs-fullhd-view #main-obs-fullhd--prize-info {
+#main-obs-fullhd-adaptive-view #main-obs-fullhd-adaptive--prize-info {
   grid-area: 6 / 10 / 2 span / 3 span;
 }
-#main-obs-fullhd-view #main-obs-fullhd--game-mode {
+#main-obs-fullhd-adaptive-view #main-obs-fullhd-adaptive--game-mode {
   grid-area: 8 / 10 / 5 span / 3 span;
 }
 
-#main-obs-fullhd-view .ball-cam-mod {
+#main-obs-fullhd-adaptive-view .ball-cam-mod {
   background-color: rgb(0, 255, 0);
   width: max-content;
   aspect-ratio: 1 / 1;
@@ -62,23 +62,23 @@
   justify-self: center;
   display: grid;
 }
-#main-obs-fullhd-view .studio-cam-mod {
+#main-obs-fullhd-adaptive-view .studio-cam-mod {
   background-color: rgb(0, 255, 0);
   padding: inherit;
   border: 8px solid rgb(229, 0, 77);
   display: grid;
 }
-#main-obs-fullhd-view .display-ads {
+#main-obs-fullhd-adaptive-view .display-ads {
   background-color: rgb(255, 255, 255);
   display: grid;
 }
-#main-obs-fullhd-view .score {
+#main-obs-fullhd-adaptive-view .score {
   background-color: rgb(255, 255, 255);
   padding: inherit;
   overflow: hidden;
   position: relative;
 }
-#main-obs-fullhd-view .score .score--title {
+#main-obs-fullhd-adaptive-view .score .score--title {
   background-color: #66033e;
   color: #fff;
   font-size: 3.2rem;
@@ -91,7 +91,7 @@
   left: 0;
   z-index: 1;
 }
-#main-obs-fullhd-view .score .score--body {
+#main-obs-fullhd-adaptive-view .score .score--body {
   color: #2c2c2c;
   padding: 20px;
   display: flex;
@@ -104,7 +104,7 @@
   z-index: 5;
 }
 
-#main-obs-fullhd-view .ball {
+#main-obs-fullhd-adaptive-view .ball {
   line-height: 0.9;
   border-radius: 100%;
   aspect-ratio: 1 / 1;
@@ -114,44 +114,44 @@
   flex-direction: column;
 }
 
-#main-obs-fullhd-view .ck {
+#main-obs-fullhd-adaptive-view .ck {
   background-color: rgb(0, 255, 0);
   color: transparent;
 }
 
 .ball- {
   background: linear-gradient(to bottom, #add8e6, #87ceeb); /* Azul claro */
-  background-image: url("../../../../public/views-media/main-obs-fullhd/ball-empty.png");
+  background-image: url("../../../../public/views-media/main-obs-fullhd-adaptive/ball-empty.png");
   background-repeat: no-repeat;
   background-size: contain;
 }
 .ball-b {
   background: linear-gradient(to bottom, #add8e6, #87ceeb); /* Azul claro */
-  background-image: url("../../../../public/views-media/main-obs-fullhd/ball-b.png");
+  background-image: url("../../../../public/views-media/main-obs-fullhd-adaptive/ball-b.png");
   background-repeat: no-repeat;
   background-size: contain;
 }
 .ball-i {
   background: linear-gradient(to bottom, #f08080, #cd5c5c); /* Rojo claro */
-  background-image: url("../../../../public/views-media/main-obs-fullhd/ball-i.png");
+  background-image: url("../../../../public/views-media/main-obs-fullhd-adaptive/ball-i.png");
   background-repeat: no-repeat;
   background-size: contain;
 }
 .ball-n {
   background: linear-gradient(to bottom, #f08080, #cd5c5c); /* Rojo claro */
-  background-image: url("../../../../public/views-media/main-obs-fullhd/ball-n.png");
+  background-image: url("../../../../public/views-media/main-obs-fullhd-adaptive/ball-n.png");
   background-repeat: no-repeat;
   background-size: contain;
 }
 .ball-g {
   background: linear-gradient(to bottom, #f08080, #cd5c5c); /* Rojo claro */
-  background-image: url("../../../../public/views-media/main-obs-fullhd/ball-g.png");
+  background-image: url("../../../../public/views-media/main-obs-fullhd-adaptive/ball-g.png");
   background-repeat: no-repeat;
   background-size: contain;
 }
 .ball-o {
   background: linear-gradient(to bottom, #f08080, #cd5c5c); /* Rojo claro */
-  background-image: url("../../../../public/views-media/main-obs-fullhd/ball-o.png");
+  background-image: url("../../../../public/views-media/main-obs-fullhd-adaptive/ball-o.png");
   background-repeat: no-repeat;
   background-size: contain;
 }

@@ -1,0 +1,37 @@
+/* last-number-list-mofva-view */
+#last-number-list-mofva-view {
+  background-color: white;
+  line-height: 0.85;
+  width: 100%;
+  align-self: end;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  /* gap: 10px; */
+}
+#last-number-list-mofva-view li {
+  display: flex;
+}
+.dir-x {
+  grid-auto-flow: column;
+  grid-template-columns: repeat(4, 1fr);
+}
+.dir-y {
+  grid-auto-flow: row;
+  grid-template-rows: repeat(4, 1fr);
+}
+
+#last-number-list-mofva-view .ball {
+  width: 100%;
+  padding: 16px;
+  border: 5px solid rgb(255, 255, 255);
+}
+
+#last-number-list-mofva-view .mofva-letter {
+  font-size: 1.6rem;
+  text-transform: uppercase;
+}
+
+#last-number-list-mofva-view .mofva-number {
+  font-size: 4rem;
+  text-transform: uppercase;
+}

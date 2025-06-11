@@ -45,6 +45,11 @@ const router = createRouter({
       path: '/views/main-obs-fullhd',
       name: 'MainObsFullHdView',
       component: MainObsFullHdView
+    },
+    {
+      path: '/views/main-obs-fullhd-adaptive',
+      name: 'MainObsFullHdAdaptiveView',
+      component: () => import('../views/MainObsFullHdAdaptiveView.vue')
     }
   ]
 });

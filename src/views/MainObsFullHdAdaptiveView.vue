@@ -1,5 +1,8 @@
 <template>
   <div id="main-obs-fullhd-adaptive-view">
+    <section id="main-obs-fullhd-adaptive--display-ads">
+      <div class="display-ads ck">display-ads</div>
+    </section>
     <section id="main-obs-fullhd-adaptive--game-board">
       <div id="game-board-mofva-view">
         <div id="header-game-board-mofva">
@@ -27,44 +30,37 @@
         </div>
       </div>
     </section>
-    <section id="main-obs-fullhd-adaptive--ball-cam">
-      <div class="ball-cam-mod ck">ball-cam</div>
-    </section>
     <section id="main-obs-fullhd-adaptive--studio-cam">
       <div class="studio-cam-mod ck">studio-cam</div>
     </section>
-    <section id="main-obs-fullhd-adaptive--group">
-      <section id="main-obs-fullhd-adaptive--display-ads">
-        <div class="display-ads ck">display-ads</div>
-      </section>
-      <section id="main-obs-fullhd--score">
-        <div class="score">
-          <h3 class="score--title">Últimas Balotas</h3>
-          <div class="score--body">
-            <div id="last-number-mofva-view" class="ball" :class="'ball-' + getColumnLetter(lastNumber)">
-              <span class="mofva-letter">{{ getColumnLetter(lastNumber) }}</span>
-              <span class="mofva-number">{{ lastNumber }}</span>
-            </div>
-            <ul id="last-number-list-mofva-view">
-              <li class="item" v-for="i in 3" :key="i">
-                <span class="ball" :class="'ball-' + getColumnLetter(displayedNumbers[i])">
-                  <span class="mofva-letter">{{ getColumnLetter(displayedNumbers[i]) }}</span>
-                  <span class="mofva-number">{{ displayedNumbers[i] || "" }}</span>
-                </span>
-              </li>
-            </ul>
+    <section id="main-obs-fullhd-adaptive--score">
+      <div class="score">
+        <!-- <h3 class="score--title">Últimas Balotas</h3> -->
+        <div class="score--body">
+          <div id="last-number-mofva-view" class="ball" :class="'ball-' + getColumnLetter(lastNumber)">
+            <span class="mofva-letter">{{ getColumnLetter(lastNumber) }}</span>
+            <span class="mofva-number">{{ lastNumber }}</span>
           </div>
+          <ul id="last-number-list-mofva-view">
+            <li class="item" v-for="i in 3" :key="i">
+              <span class="ball" :class="'ball-' + getColumnLetter(displayedNumbers[i])">
+                <span class="mofva-letter">{{ getColumnLetter(displayedNumbers[i]) }}</span>
+                <span class="mofva-number">{{ displayedNumbers[i] || "" }}</span>
+              </span>
+            </li>
+          </ul>
         </div>
-      </section>
-    </section>
-    <section id="main-obs-fullhd-adaptive--prize-info">
-      <div class="prize-info ck">
-        <h3 class="prize-info--title">Premio:</h3>
-        <div class="prize-info--description">$10.000.000</div>
       </div>
+    </section>
+    <section id="main-obs-fullhd-adaptive--ball-cam">
+      <div class="ball-cam-mod ck">ball-cam</div>
     </section>
     <section id="main-obs-fullhd-adaptive--game-mode">
       <div class="game-mode ck">game-mode</div>
+    </section>
+    <section id="main-obs-fullhd-adaptive--prize-info">
+      <div class="prize-info ck">
+      </div>
     </section>
   </div>
 </template>

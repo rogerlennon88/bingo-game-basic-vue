@@ -100,6 +100,11 @@ app.put("/api/game-mode-data", async (req, res) => {
   }
 })
 
+// Para cualquier otra ruta no manejada por la API, servir el index.html del frontend
+app.use('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+
 app.listen(port, () => {
   console.log(`Servidor backend escuchando en http://localhost:${port}`)
 })

@@ -16,8 +16,8 @@ const port = 3000
 app.use(cors())
 app.use(bodyParser.json())
 
-// Servir archivos estáticos de la vista "last-number"
-app.use("   ", express.static(path.join(__dirname, "views", "last-number"), { index: "index.html" }))
+// Servir archivos estáticos del frontend de producción
+app.use(express.static(path.join(__dirname, 'dist')));
 
 // Rutas para GameBoard data
 app.get("/api/game-board-data", async (req, res) => {

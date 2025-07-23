@@ -1,11 +1,4 @@
 {
-  "markedBalls": [
-    "27",
-    "36",
-    "11",
-    "44",
-    "56",
-    "5"
-  ],
-  "counter": 6
+  "markedBalls": [],
+  "counter": 0
 }

@@ -34,10 +34,12 @@ const gameModeRef = ref(null)
 const markedPatternCount = ref(0)
 const hasMarkedBalls = computed(() => balotasMarcadas.value.length > 0)
 
+const API_BASE_URL = process.env.VITE_API_BASE_URL;
+
 const cargarDatosGameBoard = async () => {
   console.log("Cargando datos del GameBoard desde el backend...")
   try {
-    const response = await fetch("http://localhost:3000/api/game-board-data")
+    const response = await fetch(`${API_BASE_URL}/api/game-board-data`)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -51,7 +53,7 @@ const cargarDatosGameBoard = async () => {
 const cargarGameModePattern = async () => {
   console.log("Intentando cargar el patrón del GameMode desde el backend...")
   try {
-    const response = await fetch("http://localhost:3000/api/game-mode-data")
+    const response = await fetch(`${API_BASE_URL}/api/game-mode-data`)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }
@@ -70,7 +72,7 @@ const cargarDatosIniciales = async () => {
 
 const guardarDatosGameBoard = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/game-board-data", {
+    const response = await fetch(`${API_BASE_URL}/api/game-board-data`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -91,7 +93,7 @@ const guardarDatosGameBoard = async () => {
 
 const guardarDatosGameMode = async (datosAGuardar) => {
   try {
-    const response = await fetch("http://localhost:3000/api/game-mode-data", {
+    const response = await fetch(`${API_BASE_URL}/api/game-mode-data`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -122,14 +124,14 @@ const handleMarcarBalota = async (balota) => {
 
 const actualizarContador = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/game-board-data/counter", {
+    const response = await fetch(`${API_BASE_URL}/api/game-board-data/counter`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
     })
     if (!response.ok) {
-      throw new Error("HTTP error! status: ${response.status}")
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
     const result = await response.json()
     console.log("Contador actualizado correctamente:", result.message)
@@ -148,14 +150,14 @@ const handleReiniciarGameBoard = async () => {
 
 const resetearContador = async () => {
   try {
-    const response = await fetch("http://localhost:3000/api/game-board-data/counter/reset", {
+    const response = await fetch(`${API_BASE_URL}/api/game-board-data/counter/reset`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
     })
     if (!response.ok) {
-      throw new Error("HTTP error! status: ${response.status}")
+      throw new Error(`HTTP error! status: ${response.status}`)
     }
     const result = await response.json()
     console.log("Contador reseteado correctamente:", result.message)

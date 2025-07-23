@@ -33,8 +33,10 @@ const displayedNumbers = computed(() => {
 })
 
 async function fetchMarkedBalls() {
+  const API_BASE_URL = process.env.VITE_API_BASE_URL;
+
   try {
-    const response = await fetch("http://localhost:3000/api/game-board-data")
+    const response = await fetch(`${API_BASE_URL}/api/game-board-data`)
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
     }

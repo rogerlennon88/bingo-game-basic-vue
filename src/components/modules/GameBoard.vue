@@ -72,9 +72,11 @@ export default {
       }
     }
 
+    const API_BASE_URL = process.env.VITE_API_BASE_URL;
+
     const guardarDatosGameBoard = async (datosAGuardar) => {
       try {
-        const response = await fetch("http://localhost:3000/api/game-board-data", {
+        const response = await fetch(`${API_BASE_URL}/api/game-board-data`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -93,7 +95,7 @@ export default {
 
     const cargarDatosInicialesGameBoard = async () => {
       try {
-        const response = await fetch("http://localhost:3000/api/game-board-data")
+        const response = await fetch(`${API_BASE_URL}/api/game-board-data`)
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`)
         }

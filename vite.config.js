@@ -20,4 +20,7 @@ export default defineConfig({
     },
   },
   publicDir: 'public',
+  define: {
+    'process.env.VITE_API_BASE_URL': JSON.stringify(process.env.VITE_API_BASE_URL || 'http://localhost:3000'),
+  },
 })

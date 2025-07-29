@@ -1,0 +1,48 @@
+/* src/assets/layout/_fonts.css */
+
+/* play-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: "Play";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/play-v20-latin-regular.woff2") format("woff2"), url("../fonts/play-v20-latin-regular.ttf") format("truetype");
+}
+/* play-700 - latin */
+@font-face {
+  font-display: swap;
+  font-family: "Play";
+  font-style: normal;
+  font-weight: 700;
+  src: url("../fonts/play-v20-latin-700.woff2") format("woff2"), url("../fonts/play-v20-latin-700.ttf") format("truetype");
+}
+
+/* material-icons-round-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: "Material Icons Round";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/material-icons-round-v109-latin-regular.woff2") format("woff2"),
+    url("../fonts/material-icons-round-v109-latin-regular.ttf") format("truetype");
+}
+
+/* material-icons-outlined-regular - latin */
+@font-face {
+  font-display: swap;
+  font-family: "Material Icons Outlined";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../fonts/material-icons-outlined-v110-latin-regular.woff2") format("woff2"),
+    url("../fonts/material-icons-outlined-v110-latin-regular.ttf") format("truetype");
+}
+
+/* Aktiv Grotesk Ex Trial XBold */
+@font-face {
+  font-family: "Aktiv Grotesk Ex Trial XBold";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: local("Aktiv Grotesk Ex Trial XBold"), url("../fonts/aktiv-grotesk-ex-trial-xbold.woff2") format("woff2"),
+    url("../fonts/aktiv-grotesk-ex-trial-xbold.ttf") format("truetype");
+}

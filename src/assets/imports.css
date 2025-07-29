@@ -2,6 +2,7 @@
 
 /* Layout */
 @import "./layout/_variables.css";
+@import "./layout/_fonts.css";
 @import "./layout/_reset.css";
 @import "./layout/_blocks.css";
 @import "./layout/_stack.css";

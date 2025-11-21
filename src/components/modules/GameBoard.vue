@@ -13,12 +13,32 @@
             :id="cell.id"
             class="btn-ggb num"
             @click="marcarBalotaLocal(cell.value)"
-            :class="{ marked: isBalotaMarcada(cell.value), lock: isBalotaMarcada(cell.value) }"
+            :class="{
+              marked: isBalotaMarcada(cell.value),
+              lock: isBalotaMarcada(cell.value) && !isLastMarked(cell.value),
+            }"
           >
             {{ cell.value }}
           </button>
         </div>
       </div>
+    </div>
+
+    <div id="game-board--control" class="module-controls">
+      <ul class="game-controls-list">
+        <li class="game-controls-item">
+          <button
+            id="btn-clear-board"
+            class="btn btn-primary"
+            type="button"
+            title="Limpiar Tablero"
+            @click="reiniciarJuegoConConfirmacionLocal"
+            :class="{ lock: isClearBoardDisabled, disabled: isClearBoardDisabled }"
+          >
+            <span class="btn-text">Limpiar Tablero</span>
+          </button>
+        </li>
+      </ul>
     </div>
   </div>
 </template>
@@ -28,7 +48,7 @@ import { ref, onMounted, watch, computed } from "vue"
 
 export default {
   name: "GameBoard",
-  emits: ["marcar-balota"],
+  emits: ["marcar-balota", "desmarcar-balota", "reiniciar-juego"],
   props: {
     initialMarkedBalls: {
       type: Array,
@@ -39,7 +59,7 @@ export default {
     const letters = ["B", "I", "N", "G", "O"]
     const numbersPerColumn = 15
     const tableroData = ref([])
-    const balotasMarcadasLocal = ref([...props.initialMarkedBalls]) // Estado local para la reactividad
+    const balotasMarcadasLocal = ref([...props.initialMarkedBalls])
 
     const generateTableroData = () => {
       const data = []
@@ -58,21 +78,33 @@ export default {
       return balotasMarcadasLocal.value.includes(String(balota))
     }
 
-    const marcarBalotaLocal = (balota) => {
-      const balotaString = String(balota)
-      const isMarked = balotasMarcadasLocal.value.includes(balotaString)
-
-      if (!isMarked) {
-        balotasMarcadasLocal.value.unshift(balotaString) // Añadir al inicio del array local
-        emit("marcar-balota", balotaString)
-        console.log("Marcando balota:", balotaString, "Nuevas marcadas local:", balotasMarcadasLocal.value)
-        guardarDatosGameBoard({
-          markedBalls: balotasMarcadasLocal.value,
-        })
-      }
+    const isLastMarked = (balota) => {
+      return balotasMarcadasLocal.value[0] === String(balota)
     }
 
-    const API_BASE_URL = process.env.VITE_API_BASE_URL;
+    const API_BASE_URL = process.env.VITE_API_BASE_URL
+
+    const marcarBalotaLocal = (balota) => {
+      const balotaString = String(balota)
+      const isMarked = isBalotaMarcada(balotaString)
+      const isLast = isLastMarked(balotaString)
+
+      if (isMarked) {
+        if (isLast) {
+          balotasMarcadasLocal.value.shift()
+
+          emit("desmarcar-balota", balotasMarcadasLocal.value) 
+          console.log("Desmarcando balota:", balotaString, "Nuevas marcadas local:", balotasMarcadasLocal.value)
+        } else {
+          console.log("Balota ya marcada y bloqueada:", balotaString)
+        }
+      } else {
+        balotasMarcadasLocal.value.unshift(balotaString)
+
+        emit("marcar-balota", balotaString)
+        console.log("Marcando balota:", balotaString, "Nuevas marcadas local:", balotasMarcadasLocal.value)
+      }
+    }
 
     const guardarDatosGameBoard = async (datosAGuardar) => {
       try {
@@ -100,7 +132,7 @@ export default {
           throw new Error(`HTTP error! status: ${response.status}`)
         }
         const data = await response.json()
-        balotasMarcadasLocal.value = data.markedBalls || [] // Actualizar el estado local
+        balotasMarcadasLocal.value = data.markedBalls || []
         console.log("Datos iniciales del GameBoard cargados:", balotasMarcadasLocal.value)
       } catch (error) {
         console.error("Error al cargar los datos iniciales del GameBoard:", error)
@@ -121,11 +153,30 @@ export default {
       { deep: true }
     )
 
+    const hasMarkedBallsLocal = computed(() => balotasMarcadasLocal.value.length > 0)
+    const isClearBoardDisabled = computed(() => !hasMarkedBallsLocal.value)
+    const reiniciarJuegoConConfirmacionLocal = () => {
+      if (
+        hasMarkedBallsLocal.value &&
+        window.confirm("¿Estás seguro de que quieres limpiar el tablero? Esto borrará todas las balotas marcadas.")
+      ) {
+        console.log("Confirmación de reinicio del tablero (local) aceptada.")
+        emit("reiniciar-juego")
+      } else if (!hasMarkedBallsLocal.value) {
+        console.log("No hay balotas marcadas para limpiar (local).")
+      } else {
+        console.log("Confirmación de reinicio del tablero (local) cancelada.")
+      }
+    }
+
     return {
       tableroData,
       marcarBalotaLocal,
       isBalotaMarcada,
+      isLastMarked,
       balotasMarcadasLocal,
+      isClearBoardDisabled,
+      reiniciarJuegoConConfirmacionLocal,
     }
   },
 }
@@ -136,6 +187,9 @@ export default {
 #game-board {
   background-color: rgb(36, 113, 163);
   border-radius: 4px;
+  padding: 2px;
+  display: grid;
+  gap: 2px;
 }
 
 /* Grid Game Board */
@@ -236,17 +290,30 @@ export default {
   box-shadow: inset 0 0 8px 1px rgba(0, 0, 0, 0.5);
 }
 
+#game-board--control {
+  background-color: rgba(237, 234, 222, 0.75);
+  width: 100%;
+  padding: var(--gap);
+  border-radius: calc(var(--gap) / 2);
+}
+#game-board--control .game-controls-list {
+  display: grid;
+  gap: var(--gap, 8px); /* Asumiendo 8px si --gap no está definido */
+  grid-auto-flow: column;
+  justify-content: center; /* Centramos el botón */
+}
+
 /* Border Radius Grid Buttons */
 #grid-game-board .group:first-child .cell:first-child .btn-ggb {
-  border-top-left-radius: 4px;
+  border-top-left-radius: 2px;
 }
 #grid-game-board .group:first-child .cell:last-child .btn-ggb {
-  border-bottom-left-radius: 4px;
+  border-bottom-left-radius: 2px;
 }
 #grid-game-board .group:last-child .cell:first-child .btn-ggb {
-  border-top-right-radius: 4px;
+  border-top-right-radius: 2px;
 }
 #grid-game-board .group:last-child .cell:last-child .btn-ggb {
-  border-bottom-right-radius: 4px;
+  border-bottom-right-radius: 2px;
 }
 </style>

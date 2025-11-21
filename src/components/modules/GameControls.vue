@@ -12,7 +12,7 @@
           @click="reiniciarJuegoConConfirmacion"
           :class="{ lock: isRestartGameLocked, disabled: isRestartGameDisabled }"
         >
-          <span class="material-icons-round"> history </span>
+          <!-- <span class="material-icons-round"> history </span> -->
           <span class="btn-text">Limpiar Tablero</span>
         </button>
       </li>
@@ -25,7 +25,7 @@
           @click="reiniciarModoConConfirmacion"
           :class="{ lock: isRestartModeLocked, disabled: isRestartModeDisabled }"
         >
-          <span class="material-icons-round"> settings_backup_restore </span>
+          <!-- <span class="material-icons-round"> settings_backup_restore </span> -->
           <span class="btn-text">Limpiar Modo</span>
         </button>
       </li>

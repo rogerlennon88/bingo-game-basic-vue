@@ -1,21 +1,27 @@
-<!-- src/views/GameView.vue -->
+// src/views/GameView.vue
+
 <template>
   <section class="block">
-    <GameBoard @marcar-balota="handleMarcarBalota" :initialMarkedBalls="balotasMarcadas"></GameBoard>
+    <GameBoard
+      @marcar-balota="handleMarcarBalota"
+      @reiniciar-juego="handleReiniciarGameBoard"
+      @desmarcar-balota="handleDesmarcarBalota"
+      :initialMarkedBalls="balotasMarcadas"
+    ></GameBoard>
   </section>
   <section class="block">
-    <GameMode ref="gameModeRef" :initialPattern="loadedGamePattern" @pattern-changed="handlePatternChanged"></GameMode>
+    <GameMode
+      ref="gameModeRef"
+      :initialPattern="loadedGamePattern"
+      @pattern-changed="handlePatternChanged"
+      @reiniciar-modo="handleReiniciarGameMode"
+      @llenar-modo="handleLlenarGameMode"
+    ></GameMode>
     <div class="stack">
       <LastNumber :markedBalls="balotasMarcadas"></LastNumber>
       <Counter />
     </div>
     <LastNumberList :markedBalls="balotasMarcadas"></LastNumberList>
-    <GameControls
-      @reiniciar-juego="handleReiniciarGameBoard"
-      @reiniciar-modo="handleReiniciarGameMode"
-      :hasMarkedBalls="hasMarkedBalls"
-      :markedPatternCount="markedPatternCount"
-    ></GameControls>
   </section>
 </template>
 
@@ -26,15 +32,12 @@ import LastNumber from "../components/modules/LastNumber.vue"
 import LastNumberList from "../components/modules/LastNumberList.vue"
 import GameMode from "../components/modules/GameMode.vue"
 import Counter from "../components/modules/Counter.vue"
-import GameControls from "../components/modules/GameControls.vue"
 
 const balotasMarcadas = ref([])
 const loadedGamePattern = ref([])
 const gameModeRef = ref(null)
-const markedPatternCount = ref(0)
-const hasMarkedBalls = computed(() => balotasMarcadas.value.length > 0)
 
-const API_BASE_URL = process.env.VITE_API_BASE_URL;
+const API_BASE_URL = process.env.VITE_API_BASE_URL
 
 const cargarDatosGameBoard = async () => {
   console.log("Cargando datos del GameBoard desde el backend...")
@@ -59,7 +62,6 @@ const cargarGameModePattern = async () => {
     }
     const data = await response.json()
     loadedGamePattern.value = data.gamePattern || []
-    markedPatternCount.value = data.gamePattern ? data.gamePattern.length : 0 // Inicializar el contador
   } catch (error) {
     console.error("Error al cargar el patrón del GameMode:", error)
   }
@@ -70,16 +72,14 @@ const cargarDatosIniciales = async () => {
   await cargarGameModePattern()
 }
 
-const guardarDatosGameBoard = async () => {
+const guardarDatosGameBoard = async (datos) => {
   try {
     const response = await fetch(`${API_BASE_URL}/api/game-board-data`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        markedBalls: balotasMarcadas.value,
-      }),
+      body: JSON.stringify(datos || { markedBalls: balotasMarcadas.value }),
     })
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`)
@@ -122,6 +122,31 @@ const handleMarcarBalota = async (balota) => {
   }
 }
 
+const handleDesmarcarBalota = async (newMarkedBalls) => {
+  console.log(`Balotas desmarcadas. Nuevo array: ${newMarkedBalls}`)
+  await guardarDatosGameBoard({ markedBalls: newMarkedBalls }) 
+  await disminuirContador()
+  await cargarDatosGameBoard() 
+}
+
+const disminuirContador = async () => {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/game-board-data/counter`, {
+      method: "DELETE", // Usamos DELETE para la operación de disminuir/descontar
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`)
+    }
+    const result = await response.json()
+    console.log("Contador disminuido correctamente:", result.message)
+  } catch (error) {
+    console.error("Error al disminuir el contador:", error)
+  }
+}
+
 const actualizarContador = async () => {
   try {
     const response = await fetch(`${API_BASE_URL}/api/game-board-data/counter`, {
@@ -142,9 +167,9 @@ const actualizarContador = async () => {
 
 const handleReiniciarGameBoard = async () => {
   console.log("Manejando el evento de reiniciar tablero en GameView.vue...")
-  balotasMarcadas.value = [] // Limpiar las balotas marcadas en el cliente
-  await guardarDatosGameBoard({ markedBalls: [] }) // Limpiar en el backend
-  await cargarDatosGameBoard() // Recargar el estado inicial del GameBoard
+  balotasMarcadas.value = []
+  await guardarDatosGameBoard({ markedBalls: [] })
+  await cargarDatosGameBoard()
   await resetearContador()
 }
 
@@ -168,12 +193,19 @@ const resetearContador = async () => {
 
 const handleReiniciarGameMode = async () => {
   console.log("Manejando el evento de reiniciar modo en GameView.vue...")
-  await guardarDatosGameMode({ gamePattern: [] }) // Limpiar el patrón en el backend
-  await cargarGameModePattern() // Recargar el patrón inicial
+  await guardarDatosGameMode({ gamePattern: [] })
+  await cargarGameModePattern()
+}
+
+const handleLlenarGameMode = async (fullPattern) => {
+  console.log("Manejando el evento de llenar modo en GameView.vue...")
+  loadedGamePattern.value = fullPattern
+  await guardarDatosGameMode({ gamePattern: fullPattern })
+  await cargarGameModePattern()
+  handlePatternChanged(fullPattern)
 }
 
 const handlePatternChanged = (newPattern) => {
-  markedPatternCount.value = newPattern.length
   console.log("Patrón cambiado en GameView.vue:", newPattern)
 }
 

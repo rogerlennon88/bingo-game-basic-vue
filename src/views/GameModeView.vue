@@ -49,7 +49,7 @@ const generateGameModeData = () => {
 }
 
 const cargarGameModePattern = async () => {
-  const API_BASE_URL = process.env.VITE_API_BASE_URL;
+  const API_BASE_URL = process.env.VITE_API_BASE_URL
 
   try {
     const response = await fetch(`${API_BASE_URL}/api/game-mode-data`)
@@ -81,8 +81,15 @@ onUnmounted(() => {
 <style scoped>
 /* game-mode-view */
 
+#game-mode-view.module {
+  background-color: inherit;
+  border: 4px solid fuchsia;
+  height: 100%;
+  aspect-ratio: 1 / 1;
+}
+
 .layout-mode {
-  background-color: rgb(229, 228, 226);
+  background-color: inherit;
   padding: calc(var(--gap) / 2);
   border-radius: 4px;
 }
@@ -90,14 +97,14 @@ onUnmounted(() => {
 /* Grid Game Mode */
 #grid-game-mode-view {
   display: grid;
-  gap: 2px;
+  gap: 12px;
   grid-template-columns: repeat(5, 1fr);
 }
 
 /* Groups and Cells */
 #grid-game-mode-view .group {
   display: grid;
-  gap: 2px;
+  gap: 12px;
 }
 #grid-game-mode-view .cell {
   display: grid;
@@ -105,10 +112,10 @@ onUnmounted(() => {
 
 /* General Span */
 #grid-game-mode-view .btn-ggm {
-  color: white;
+  color: transparent;
   aspect-ratio: 1 / 1;
   border: none;
-  border-radius: 2px;
+  border-radius: 32px;
   display: grid;
   place-items: center;
   user-select: none;
@@ -116,8 +123,8 @@ onUnmounted(() => {
 
 /* Letter Span */
 #grid-game-mode-view .letter {
-  background-color: rgb(178, 190, 181);
-  color: rgba(255, 255, 255, 0.5);
+  background-color: transparent;
+  color: transparent;
   font-size: 2.4rem;
   font-weight: var(--fw-bold);
   padding: calc(var(--gap) * 2 / 2);
@@ -125,42 +132,51 @@ onUnmounted(() => {
 
 /* Number Span */
 #grid-game-mode-view .num {
-  background-color: rgb(137, 148, 153);
-  color: rgba(255, 255, 255, 0.32);
-  font-size: 1.2rem;
+  background-color: transparent;
+  color: transparent;
+  font-size: 15rem;
   font-weight: var(--fw-bold);
 }
 
 /* Middle Span */
 #grid-game-mode-view .middle {
   background-color: rgb(211, 211, 211);
-  color: rgb(224, 223, 223);
+  color: transparent;
   font-size: 1.2rem;
   font-weight: var(--fw-bold);
+  opacity: 0;
 }
 
 /* Letter Span Status */
 #grid-game-mode-view .letter.marked {
   background-color: rgb(138, 154, 91);
-  color: rgba(178, 190, 181, 0.8);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.16);
-  box-shadow: inset 0 0 8px 1px rgba(132, 136, 132, 0.5);
+  color: transparent;
+  text-shadow: none;
+  box-shadow: none;
 }
 
 /* Number Span Status */
 #grid-game-mode-view .num.marked {
-  background-color: rgb(233, 116, 81);
-  color: rgba(250, 249, 246, 0.75);
-  text-shadow: 2px 2px 2px rgba(139, 64, 0, 0.75);
-  box-shadow: inset 0 0 8px 1px rgba(139, 64, 0, 0.64);
+  background: #bcbd48;
+  background-image: url("../../public/views-media/game-mode/icon--btn-marked--game-mode.png"), linear-gradient(0deg, #65033e 1%, #7f0554 51%, #7f0554);
+  background-size: contain;
+  background-repeat: no-repeat;
+  border: 6px solid #ffc200;
+  color: transparent;
+  text-shadow: none;
+  box-shadow: inset 0 0 32px 4px #e3004b;
 }
 
 /* Middle Span Status */
 #grid-game-mode-view .middle.marked {
   background-color: rgb(95, 158, 160);
-  color: rgb(175, 225, 175);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.16);
-  box-shadow: inset 0 0 8px 1px rgba(64, 130, 109, 0.5);
+  color: transparent;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+#grid-game-mode-view .group .cell:first-child {
+  display: none;
 }
 
 /* Border Radius Grid */

@@ -1,5 +1,3 @@
-<!-- src/components/modules/GameMode.vue -->
-
 <template>
   <div id="game-mode" class="module">
     <h2 class="title-2">Modo de Juego</h2>
@@ -25,15 +23,52 @@
         </div>
       </div>
     </div>
+
+    <div id="game-mode--control" class="module-controls">
+      <ul class="game-controls-list">
+        <li class="game-controls-item">
+          <button
+            id="btn-clear-mode"
+            class="btn btn-primary"
+            type="button"
+            title="Limpiar Patrón de Juego"
+            @click="reiniciarModoConConfirmacionLocal"
+            :class="{ lock: isClearModeDisabled, disabled: isClearModeDisabled }"
+          >
+            <span class="btn-text">Limpiar Patrón</span>
+          </button>
+        </li>
+        <li class="game-controls-item">
+          <button
+            id="btn-fill-mode"
+            class="btn btn-primary"
+            type="button"
+            title="Llenar Patrón de Juego Completo"
+            @click="llenarModoConConfirmacionLocal"
+            :class="{ lock: isFillModeDisabled, disabled: isFillModeDisabled }"
+          >
+            <span class="btn-text">Llenar Patrón</span>
+          </button>
+        </li>
+      </ul>
+    </div>
   </div>
 </template>
 
 <script>
-import { ref, watch, onMounted } from "vue"
+import { ref, watch, onMounted, computed } from "vue"
+
+const FULL_PATTERN = [
+  "b1", "b2", "b3", "b4", "b5",
+  "i1", "i2", "i3", "i4", "i5",
+  "n1", "n2", "n4", "n5", 
+  "g1", "g2", "g3", "g4", "g5",
+  "o1", "o2", "o3", "o4", "o5"
+]
 
 export default {
   name: "GameMode",
-  emits: ["pattern-changed"], // Emitir el evento pattern-changed
+  emits: ["pattern-changed", "reiniciar-modo", "llenar-modo"],
   props: {
     initialPattern: {
       type: Array,
@@ -73,13 +108,13 @@ export default {
         } else {
           selectedPattern.value = selectedPattern.value.filter((id) => id !== positionId)
         }
-        selectedPattern.value = [...selectedPattern.value] // Trigger reactivity
-        saveGameMode(selectedPattern.value) // Guardamos directamente aquí
-        emit("pattern-changed", selectedPattern.value) // Emitir el evento
+        selectedPattern.value = [...selectedPattern.value]
+        saveGameMode(selectedPattern.value)
+        emit("pattern-changed", selectedPattern.value)
       }
     }
 
-    const API_BASE_URL = process.env.VITE_API_BASE_URL;
+    const API_BASE_URL = process.env.VITE_API_BASE_URL
 
     const saveGameMode = async (pattern) => {
       try {
@@ -104,7 +139,6 @@ export default {
 
     onMounted(() => {
       generateGameModeData()
-      // Inicial marking based on initialPattern prop
       props.initialPattern.forEach((positionId) => {
         const button = document.getElementById(positionId)
         if (button && !button.classList.contains("marked")) {
@@ -113,12 +147,10 @@ export default {
       })
     })
 
-    // Watch for changes in the initialPattern prop
     watch(
       () => props.initialPattern,
       (newPattern) => {
         selectedPattern.value = [...newPattern]
-        // Update the visual state of the buttons based on the new pattern
         gameModeData.value.forEach((column) => {
           column.forEach((cell) => {
             if (cell.type === "number" && document.getElementById(cell.id)) {
@@ -139,10 +171,49 @@ export default {
       { deep: true }
     )
 
+    const hasSelectedPattern = computed(() => selectedPattern.value.length > 0)
+    const isClearModeDisabled = computed(() => !hasSelectedPattern.value)
+
+    const reiniciarModoConConfirmacionLocal = () => {
+      if (
+        hasSelectedPattern.value &&
+        window.confirm("¿Estás seguro de que quieres limpiar el patrón de juego? Esto borrará la selección actual.")
+      ) {
+        console.log("Confirmación de reinicio del modo (local) aceptada.")
+        emit("reiniciar-modo")
+      } else if (!hasSelectedPattern.value) {
+        console.log("No hay patrón seleccionado para limpiar (local).")
+      } else {
+        console.log("Confirmación de reinicio del modo (local) cancelada.")
+      }
+    }
+    
+    const isPatternFull = computed(() => selectedPattern.value.length === FULL_PATTERN.length)
+
+    const isFillModeDisabled = computed(() => isPatternFull.value)
+
+    const llenarModoConConfirmacionLocal = () => {
+      if (
+        !isPatternFull.value &&
+        window.confirm("¿Estás seguro de que quieres llenar el patrón de juego? Esto seleccionará todas las casillas disponibles.")
+      ) {
+        console.log("Confirmación de llenado del modo (local) aceptada.")
+        emit("llenar-modo", FULL_PATTERN) 
+      } else if (isPatternFull.value) {
+        console.log("El patrón ya está completamente lleno (local).")
+      } else {
+        console.log("Confirmación de llenado del modo (local) cancelada.")
+      }
+    }
+
     return {
       gameModeData,
       togglePattern,
       selectedPattern,
+      isClearModeDisabled,
+      reiniciarModoConConfirmacionLocal,
+      isFillModeDisabled,
+      llenarModoConConfirmacionLocal,
     }
   },
 }
@@ -150,7 +221,7 @@ export default {
 
 <style scoped>
 /* game-mode */
-
+/* ... (Los estilos CSS permanecen sin cambios) ... */
 .layout-mode {
   background-color: rgb(229, 228, 226);
   padding: calc(var(--gap) / 2);
@@ -230,8 +301,8 @@ export default {
 
 /* Number Button Status */
 #grid-game-mode .num:hover {
-  background-color: rgb(227, 115, 94);
-  color: rgba(255, 229, 180, 0.95);
+  /* background-color: rgb(227, 115, 94); */
+  /* color: rgba(255, 229, 180, 0.95); */
 }
 #grid-game-mode .num:active {
   background-color: rgb(233, 116, 81);
@@ -276,5 +347,21 @@ export default {
   font-weight: var(--fw-bold);
   border: none;
   border-radius: 4px;
+}
+
+/* Estilos para los controles del módulo */
+#game-mode--control {
+  background-color: rgba(237, 234, 222, 0.75);
+  width: 100%;
+  padding: var(--gap);
+  border-radius: calc(var(--gap) / 2);
+  margin-top: 4px;
+}
+
+#game-mode--control .game-controls-list {
+  display: grid;
+  gap: var(--gap, 8px);
+  grid-auto-flow: column;
+  justify-content: center;
 }
 </style>

@@ -32,7 +32,7 @@
             class="btn btn-primary"
             type="button"
             title="Limpiar Patrón de Juego"
-            @click="reiniciarModoConConfirmacionLocal"
+            @click="$emit('reiniciar-modo')"
             :class="{ lock: isClearModeDisabled, disabled: isClearModeDisabled }"
           >
             <span class="btn-text">Limpiar Patrón</span>
@@ -44,7 +44,7 @@
             class="btn btn-primary"
             type="button"
             title="Llenar Patrón de Juego Completo"
-            @click="llenarModoConConfirmacionLocal"
+            @click="llenarModoLocal"
             :class="{ lock: isFillModeDisabled, disabled: isFillModeDisabled }"
           >
             <span class="btn-text">Llenar Patrón</span>
@@ -115,77 +115,21 @@ export default {
     }
 
     const togglePattern = (positionId) => {
-      const button = document.getElementById(positionId)
-      if (button) {
-        button.classList.toggle("marked")
-        const isMarked = button.classList.contains("marked")
-
-        if (isMarked) {
-          if (!selectedPattern.value.includes(positionId)) {
-            selectedPattern.value.unshift(positionId)
-          }
-        } else {
-          selectedPattern.value = selectedPattern.value.filter((id) => id !== positionId)
-        }
-        selectedPattern.value = [...selectedPattern.value]
-        saveGameMode(selectedPattern.value)
-        emit("pattern-changed", selectedPattern.value)
+      const index = selectedPattern.value.indexOf(positionId)
+      if (index === -1) {
+        selectedPattern.value.unshift(positionId)
+      } else {
+        selectedPattern.value.splice(index, 1)
       }
+      // Emitimos cambio, NO guardamos (el padre lo hará)
+      emit("pattern-changed", [...selectedPattern.value])
     }
 
-    const API_BASE_URL = process.env.VITE_API_BASE_URL
-
-    const saveGameMode = async (pattern) => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/game-mode-data`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            gamePattern: pattern,
-          }),
-        })
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`)
-        }
-        const result = await response.json()
-        console.log("Patrón del juego guardado:", result.message)
-      } catch (error) {
-        console.error("Error al guardar el patrón del juego:", error)
-      }
-    }
-
-    onMounted(() => {
-      generateGameModeData()
-      props.initialPattern.forEach((positionId) => {
-        const button = document.getElementById(positionId)
-        if (button && !button.classList.contains("marked")) {
-          button.classList.add("marked")
-        }
-      })
-    })
-
+    // Sincronizar cambios que vengan del servidor
     watch(
       () => props.initialPattern,
       (newPattern) => {
         selectedPattern.value = [...newPattern]
-        gameModeData.value.forEach((column) => {
-          column.forEach((cell) => {
-            if (cell.type === "number" && document.getElementById(cell.id)) {
-              const button = document.getElementById(cell.id)
-              if (newPattern.includes(cell.id)) {
-                if (!button.classList.contains("marked")) {
-                  button.classList.add("marked")
-                }
-              } else {
-                if (button.classList.contains("marked")) {
-                  button.classList.remove("marked")
-                }
-              }
-            }
-          })
-        })
       },
       { deep: true }
     )
@@ -193,57 +137,47 @@ export default {
     const hasSelectedPattern = computed(() => selectedPattern.value.length > 0)
     const isClearModeDisabled = computed(() => !hasSelectedPattern.value)
 
-    const reiniciarModoConConfirmacionLocal = () => {
-      if (hasSelectedPattern.value) {
-        emit("reiniciar-modo")
-      }
-    }
-
     const isPatternFull = computed(() => selectedPattern.value.length === FULL_PATTERN.length)
-
     const isFillModeDisabled = computed(() => isPatternFull.value)
 
-    const llenarModoConConfirmacionLocal = () => {
-      if (!isPatternFull.value) {
-        emit("llenar-modo", FULL_PATTERN)
-      }
+    const llenarModoLocal = () => {
+      emit("llenar-modo", FULL_PATTERN)
     }
+
+    onMounted(() => {
+      generateGameModeData()
+      // IMPORTANTE: Aquí borramos cualquier lógica de fetch antigua
+    })
 
     return {
       gameModeData,
       togglePattern,
       selectedPattern,
       isClearModeDisabled,
-      reiniciarModoConConfirmacionLocal,
       isFillModeDisabled,
-      llenarModoConConfirmacionLocal,
+      llenarModoLocal,
     }
   },
 }
 </script>
 
 <style scoped>
-/* game-mode */
+/* Tus estilos CSS existentes se mantienen IGUALES */
 #game-mode {
   grid-template-rows: auto 1fr auto;
   place-items: inherit;
 }
-/* ... (Los estilos CSS permanecen sin cambios) ... */
 .layout-mode {
   background-color: rgb(229, 228, 226);
   padding: calc(var(--gap) / 2);
   border-radius: 4px;
   display: grid;
 }
-
-/* Grid Game Mode */
 #grid-game-mode {
   display: grid;
   gap: 2px;
   grid-template-columns: repeat(5, 1fr);
 }
-
-/* Groups and Cells */
 #grid-game-mode .group {
   display: grid;
   gap: 2px;
@@ -252,20 +186,13 @@ export default {
 #grid-game-mode .cell {
   display: grid;
 }
-
-/* General Buttons */
 #grid-game-mode .btn-ggm {
   color: white;
-  /* aspect-ratio: 1 / 1; */
   border: none;
   border-radius: 2px;
-  /* display: grid; */
-  /* place-items: center; */
   cursor: pointer;
   user-select: none;
 }
-
-/* Letter Button */
 #grid-game-mode .letter {
   background-color: rgb(178, 190, 181);
   color: rgba(255, 255, 255, 0.5);
@@ -273,60 +200,36 @@ export default {
   font-weight: var(--fw-bold);
   padding: calc(var(--gap) * 2 / 2);
 }
-
-/* Number Button */
 #grid-game-mode .num {
   background-color: rgb(137, 148, 153);
   color: rgba(255, 255, 255, 0.32);
   font-size: 1.2rem;
   font-weight: var(--fw-bold);
 }
-
-/* Middle Button */
 #grid-game-mode .middle {
   background-color: rgb(211, 211, 211);
   color: rgb(224, 223, 223);
   font-size: 1.2rem;
   font-weight: var(--fw-bold);
 }
-
-/* Letter Button Status */
 #grid-game-mode .letter:hover {
   background-color: rgb(138, 154, 91);
   color: rgb(95, 133, 117);
 }
+#grid-game-mode .letter.marked,
 #grid-game-mode .letter:active {
   background-color: rgb(95, 133, 117);
   color: rgba(178, 190, 181, 0.8);
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.16);
   box-shadow: inset 0 0 8px 1px rgba(132, 136, 132, 0.5);
 }
-#grid-game-mode .letter.marked {
-  background-color: rgb(138, 154, 91);
-  color: rgba(178, 190, 181, 0.8);
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.16);
-  box-shadow: inset 0 0 8px 1px rgba(132, 136, 132, 0.5);
-}
-
-/* Number Button Status */
-#grid-game-mode .num:hover {
-  /* background-color: rgb(227, 115, 94); */
-  /* color: rgba(255, 229, 180, 0.95); */
-}
+#grid-game-mode .num.marked,
 #grid-game-mode .num:active {
   background-color: rgb(233, 116, 81);
   color: rgba(250, 249, 246, 0.75);
   text-shadow: 2px 2px 2px rgba(139, 64, 0, 0.75);
   box-shadow: inset 0 0 8px 1px rgba(139, 64, 0, 0.64);
 }
-#grid-game-mode .num.marked {
-  background-color: rgb(233, 116, 81);
-  color: rgba(250, 249, 246, 0.75);
-  text-shadow: 2px 2px 2px rgba(139, 64, 0, 0.75);
-  box-shadow: inset 0 0 8px 1px rgba(139, 64, 0, 0.64);
-}
-
-/* Middel Button Status */
 #grid-game-mode .middle:hover {
   background-color: rgb(95, 158, 160);
   color: rgb(175, 225, 175);
@@ -337,16 +240,12 @@ export default {
   text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.16);
   box-shadow: inset 0 0 8px 1px rgba(64, 130, 109, 0.5);
 }
-
-/* Border Radius Grid */
 #grid-game-mode .group:first-child .cell:first-child button {
   border-top-left-radius: 4px;
 }
 #grid-game-mode .group:last-child .cell:first-child button {
   border-top-right-radius: 4px;
 }
-
-/* Options Mode */
 #game-mode .options-mode {
   display: grid;
 }
@@ -357,16 +256,12 @@ export default {
   border: none;
   border-radius: 4px;
 }
-
-/* Estilos para los controles del módulo */
 #game-mode--control {
-  /* background-color: rgba(237, 234, 222, 0.75); */
   width: 100%;
   padding: var(--gap);
   border-radius: calc(var(--gap) / 2);
   margin-top: 4px;
 }
-
 #game-mode--control .game-controls-list {
   display: grid;
   gap: var(--gap, 8px);

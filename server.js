@@ -12,11 +12,15 @@ const __dirname = path.dirname(__filename)
 const app = express()
 const port = 3000
 
+// CORS ya no es estrictamente necesario si usamos el mismo origen,
+// pero es buena práctica dejarlo por seguridad.
 app.use(cors())
 app.use(bodyParser.json())
 
-// Servir archivos estáticos del frontend de producción
+// 1. Servir archivos estáticos (JS, CSS, Imágenes)
 app.use(express.static(path.join(__dirname, "dist")))
+
+// --- RUTAS API (Siempre deben ir ANTES del catch-all) ---
 
 // Rutas para GameBoard data
 app.get("/api/game-board-data", async (req, res) => {
@@ -91,7 +95,6 @@ app.put("/api/game-board-data/counter/reset", async (req, res) => {
 })
 
 // Rutas para GameMode data
-
 app.get("/api/game-mode-data", async (req, res) => {
   try {
     const filePath = path.join(__dirname, "data-game-mode.json")
@@ -115,11 +118,12 @@ app.put("/api/game-mode-data", async (req, res) => {
   }
 })
 
-// Para cualquier otra ruta no manejada por la API, servir el index.html del frontend
-app.use("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"))
-})
+// --- FINAL CATCH-ALL (SPA) ---
+// Usamos app.use sin ruta específica, Express lo ejecuta si ninguna ruta anterior coincidió.
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
+});
 
 app.listen(port, () => {
-  console.log(`Servidor backend escuchando en http://localhost:${port}`)
-})
+  console.log(`Servidor backend escuchando en http://localhost:${port}`);
+});

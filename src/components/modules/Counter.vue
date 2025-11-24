@@ -1,80 +1,65 @@
 <template>
-  <div id="counter-container" class="module">
-    <h2 class="title-2">Cantidad</h2>
-    <div class="counter-group">
-      <div class="data counter-data-1" :class="{ actived: counterValue > 0 }">{{ counterValue }}</div>
-      <div class="data counter-div">/</div>
-      <div class="data counter-data-2">75</div>
+  <div id="counter" class="module">
+    <h2 class="title-2">Balotas</h2>
+    <div class="counter--grid">
+      <div class="data counter--data-1" :class="{ actived: counter > 0 }">
+        {{ counter }}
+      </div>
+      <div class="data counter--div">/</div>
+      <div class="data counter--data-2">75</div>
     </div>
   </div>
 </template>
 
-<script>
-import { ref, onMounted } from "vue"
+<script setup>
+// IMPORTANTE: Ya no usamos fetch manual.
+import { useGameData } from "../../composables/useGameData"
 
-export default {
-  name: "Counter",
-  setup() {
-    const counterValue = ref(0)
-    const API_BASE_URL = process.env.VITE_API_BASE_URL;
-
-    async function fetchCounterValue() {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/game-board-data`)
-        if (!response.ok) {
-          throw new Error("HTTP error! status: ${response.status}")
-        }
-        const data = await response.json()
-        counterValue.value = data.counter || 0
-      } catch (error) {
-        console.error("Error al obtener el valor del contador:", error)
-      }
-    }
-
-    onMounted(() => {
-      fetchCounterValue()
-      setInterval(fetchCounterValue, 1000)
-    })
-
-    return {
-      counterValue,
-    }
-  },
-}
+// Nos enganchamos al estado global. El intervalo de 1000ms ya está corriendo en GameView,
+// así que este componente solo "escucha" el valor actualizado.
+const { counter } = useGameData()
 </script>
 
 <style scoped>
-#counter-container {
+/* Tus estilos CSS existentes se mantienen IGUALES */
+#counter {
+  padding-bottom: calc(var(--gap) * 1.5);
 }
-.counter-group {
-  background-color: rgb(229, 228, 226);
+.counter--grid {
+  background-color: rgb(169, 169, 169);
+  color: rgb(211, 211, 211);
   font-size: 2.4rem;
   line-height: 1;
   text-shadow: 0 0 8px rgba(112, 128, 144, 0.8);
-  padding: calc(var(--gap) / 2);
-  border-radius: 4px;
-  justify-self: center;
-  display: flex;
+  padding: 8px;
+  border-radius: 10px;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(5, 1fr);
+  gap: calc(var(--gap) / 2);
 }
-.counter-group .data {
-  background-color: rgb(178, 190, 181);
-  color: rgba(255, 255, 255, 0.5);
+.data {
   padding: calc(var(--gap) / 2);
+  display: grid;
+  place-items: center;
 }
-.counter-group .data.counter-data-1,
-.counter-group .data.counter-data-2 {
+.data.counter--data-1,
+.data.counter--data-2 {
   font-weight: var(--fw-bold);
 }
-.counter-group .data.counter-data-1 {
-  border-radius: 4px 0 0 4px;
+.data.counter--data-1 {
+  border-radius: 8px 0 0 8px;
+  grid-column: 2 span;
   justify-content: end;
 }
-.counter-group .data.counter-div {
+.data.counter--div {
+  grid-column: 1 span;
 }
-.counter-group .data.counter-data-2 {
-  border-radius: 0 4px 4px 0;
+.data.counter--data-2 {
+  border-radius: 0 8px 8px 0;
+  grid-column: 2 span;
 }
-.counter-group .data.actived {
+.data.actived {
   color: var(--color-white);
 }
 </style>

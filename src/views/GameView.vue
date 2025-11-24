@@ -4,7 +4,7 @@
   <section class="block">
     <GameBoard
       @marcar-balota="handleMarcarBalota"
-      @reiniciar-juego="handleReiniciarGameBoard"
+      @reiniciar-juego="solicitarReinicioJuego"
       @desmarcar-balota="handleDesmarcarBalota"
       :initialMarkedBalls="balotasMarcadas"
     ></GameBoard>
@@ -37,13 +37,21 @@
             ref="gameModeRef"
             :initialPattern="loadedGamePattern"
             @pattern-changed="handlePatternChanged"
-            @reiniciar-modo="handleReiniciarGameMode"
-            @llenar-modo="handleLlenarGameMode"
+            @reiniciar-modo="solicitarReinicioModo"
+            @llenar-modo="solicitarLlenarModo"
           ></GameMode>
         </div>
       </div>
     </div>
   </transition>
+
+  <ConfirmationModal
+    :isOpen="showConfirm"
+    :title="confirmConfig.title"
+    :message="confirmConfig.message"
+    @confirm="ejecutarAccionConfirmada"
+    @cancel="cancelarConfirmacion"
+  />
 </template>
 
 <script setup>
@@ -54,13 +62,68 @@ import LastNumberList from "../components/modules/LastNumberList.vue"
 import GameMode from "../components/modules/GameMode.vue"
 import Counter from "../components/modules/Counter.vue"
 import GameControls from "../components/modules/GameControls.vue"
+import ConfirmationModal from "../components/ConfirmationModal.vue"
 
 const balotasMarcadas = ref([])
 const loadedGamePattern = ref([])
 const gameModeRef = ref(null)
 const API_BASE_URL = process.env.VITE_API_BASE_URL
-
 const isModalOpen = ref(false)
+
+// --- LÓGICA DEL SISTEMA DE CONFIRMACIÓN ---
+const showConfirm = ref(false)
+const confirmConfig = ref({
+  title: "",
+  message: "",
+  action: null, // Guardaremos la función a ejecutar aquí
+})
+
+// Función genérica para abrir el modal
+const abrirConfirmacion = (titulo, mensaje, accion) => {
+  confirmConfig.value = { title: titulo, message: mensaje, action: accion }
+  showConfirm.value = true
+}
+
+const ejecutarAccionConfirmada = async () => {
+  if (confirmConfig.value.action) {
+    await confirmConfig.value.action()
+  }
+  showConfirm.value = false
+}
+
+const cancelarConfirmacion = () => {
+  showConfirm.value = false
+}
+
+// --- SOLICITUDES DESDE LOS HIJOS ---
+
+// 1. Solicitud desde GameBoard
+const solicitarReinicioJuego = () => {
+  if (balotasMarcadas.value.length === 0) return // No confirmar si está vacío
+
+  abrirConfirmacion(
+    "¿Limpiar Tablero?",
+    "Estás a punto de borrar todas las balotas marcadas. Esta acción no se puede deshacer.",
+    handleReiniciarGameBoard // Pasamos la función original
+  )
+}
+
+// 2. Solicitud desde GameMode (Limpiar)
+const solicitarReinicioModo = () => {
+  if (loadedGamePattern.value.length === 0) return
+
+  abrirConfirmacion("¿Limpiar Patrón?", "Esto borrará el patrón de juego actual.", handleReiniciarGameMode)
+}
+
+// 3. Solicitud desde GameMode (Llenar)
+const solicitarLlenarModo = (fullPattern) => {
+  // Nota: GameMode pasa el patrón lleno como argumento
+  abrirConfirmacion(
+    "¿Llenar Patrón?",
+    "Esto seleccionará todas las casillas del patrón.",
+    () => handleLlenarGameMode(fullPattern) // Wrapper para pasar argumentos
+  )
+}
 
 const openModal = () => {
   isModalOpen.value = true

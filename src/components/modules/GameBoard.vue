@@ -158,16 +158,10 @@ export default {
     const hasMarkedBallsLocal = computed(() => balotasMarcadasLocal.value.length > 0)
     const isClearBoardDisabled = computed(() => !hasMarkedBallsLocal.value)
     const reiniciarJuegoConConfirmacionLocal = () => {
-      if (
-        hasMarkedBallsLocal.value &&
-        window.confirm("¿Estás seguro de que quieres limpiar el tablero? Esto borrará todas las balotas marcadas.")
-      ) {
-        console.log("Confirmación de reinicio del tablero (local) aceptada.")
-        emit("reiniciar-juego")
-      } else if (!hasMarkedBallsLocal.value) {
-        console.log("No hay balotas marcadas para limpiar (local).")
+      if (hasMarkedBallsLocal.value) {
+        emit("reiniciar-juego") // El padre (GameView) se encargará de confirmar
       } else {
-        console.log("Confirmación de reinicio del tablero (local) cancelada.")
+        console.log("No hay balotas marcadas para limpiar (local).")
       }
     }
 

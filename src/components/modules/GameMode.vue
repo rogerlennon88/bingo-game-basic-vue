@@ -59,11 +59,30 @@
 import { ref, watch, onMounted, computed } from "vue"
 
 const FULL_PATTERN = [
-  "b1", "b2", "b3", "b4", "b5",
-  "i1", "i2", "i3", "i4", "i5",
-  "n1", "n2", "n4", "n5", 
-  "g1", "g2", "g3", "g4", "g5",
-  "o1", "o2", "o3", "o4", "o5"
+  "b1",
+  "b2",
+  "b3",
+  "b4",
+  "b5",
+  "i1",
+  "i2",
+  "i3",
+  "i4",
+  "i5",
+  "n1",
+  "n2",
+  "n4",
+  "n5",
+  "g1",
+  "g2",
+  "g3",
+  "g4",
+  "g5",
+  "o1",
+  "o2",
+  "o3",
+  "o4",
+  "o5",
 ]
 
 export default {
@@ -175,34 +194,18 @@ export default {
     const isClearModeDisabled = computed(() => !hasSelectedPattern.value)
 
     const reiniciarModoConConfirmacionLocal = () => {
-      if (
-        hasSelectedPattern.value &&
-        window.confirm("¿Estás seguro de que quieres limpiar el patrón de juego? Esto borrará la selección actual.")
-      ) {
-        console.log("Confirmación de reinicio del modo (local) aceptada.")
+      if (hasSelectedPattern.value) {
         emit("reiniciar-modo")
-      } else if (!hasSelectedPattern.value) {
-        console.log("No hay patrón seleccionado para limpiar (local).")
-      } else {
-        console.log("Confirmación de reinicio del modo (local) cancelada.")
       }
     }
-    
+
     const isPatternFull = computed(() => selectedPattern.value.length === FULL_PATTERN.length)
 
     const isFillModeDisabled = computed(() => isPatternFull.value)
 
     const llenarModoConConfirmacionLocal = () => {
-      if (
-        !isPatternFull.value &&
-        window.confirm("¿Estás seguro de que quieres llenar el patrón de juego? Esto seleccionará todas las casillas disponibles.")
-      ) {
-        console.log("Confirmación de llenado del modo (local) aceptada.")
-        emit("llenar-modo", FULL_PATTERN) 
-      } else if (isPatternFull.value) {
-        console.log("El patrón ya está completamente lleno (local).")
-      } else {
-        console.log("Confirmación de llenado del modo (local) cancelada.")
+      if (!isPatternFull.value) {
+        emit("llenar-modo", FULL_PATTERN)
       }
     }
 

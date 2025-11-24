@@ -38,15 +38,16 @@ export default {
 #last-number .num-1 {
   background-color: white;
   color: rgb(25, 25, 112);
-  font-size: 6.4rem;
+  font-size: 4.8rem;
   font-weight: var(--fw-bold);
-  padding: calc(var(--gap) * 2);
+  padding: calc(var(--gap));
   border: 6px solid rgba(233, 220, 201, 0.75);
-  border-radius: 50%;
+  border-radius: 100%;
 }
 
 .ball {
-  min-width: 128px;
+  min-width: 84px;
+  min-height: 84px;
   aspect-ratio: 1 / 1;
   display: flex;
   align-items: center;

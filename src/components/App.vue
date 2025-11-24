@@ -6,6 +6,18 @@
       <section id="brand">
         <img class="logo" src="/public/img/logo.png" alt="Aladdingo Logo" />
       </section>
+
+      <section id="window-controls">
+        <button
+          class="btn btn-primary"
+          @click="toggleFullscreen"
+          :title="isFullscreen ? 'Salir de Pantalla Completa' : 'Pantalla Completa'"
+        >
+          <span class="material-icons-round">
+            {{ isFullscreen ? "fullscreen_exit" : "fullscreen" }}
+          </span>
+        </button>
+      </section>
       <section id="page-title">
         <h1>Validador de Juego</h1>
       </section>
@@ -27,6 +39,20 @@ import GameMode from "./modules/GameMode.vue"
 import Counter from "./modules/Counter.vue"
 import GameControls from "./modules/GameControls.vue"
 
+const isFullscreen = ref(false);
+
+const toggleFullscreen = () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+    isFullscreen.value = true;
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+      isFullscreen.value = false;
+    }
+  }
+};
+
 const route = useRoute() // Obtén la instancia de la ruta actual
 
 const appClass = computed(() => {
@@ -39,7 +65,7 @@ const gameModeRef = ref(null)
 const markedPatternCount = ref(0)
 const hasMarkedBalls = computed(() => balotasMarcadas.value.length > 0)
 
-const API_BASE_URL = process.env.VITE_API_BASE_URL;
+const API_BASE_URL = process.env.VITE_API_BASE_URL
 
 const cargarDatosGameBoard = async () => {
   console.log("Cargando datos del GameBoard desde el backend...")

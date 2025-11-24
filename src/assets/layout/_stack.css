@@ -3,5 +3,5 @@
 .stack {
   display: grid;
   grid-auto-flow: column;
-  gap: calc(var(--gap) * 2);
+  gap: calc(var(--gap));
 }

@@ -2,24 +2,26 @@
 
 <template>
   <div id="game-board" class="module">
-    <div id="grid-game-board" class="board-y">
-      <div v-for="(column, columnIndex) in tableroData" :key="columnIndex" class="group">
-        <div v-for="cell in column" :key="cell.id" class="cell">
-          <button v-if="cell.type === 'letter'" :id="cell.id" class="btn-ggb letter lock">
-            {{ cell.value }}
-          </button>
-          <button
-            v-else-if="cell.type === 'number'"
-            :id="cell.id"
-            class="btn-ggb num"
-            @click="marcarBalotaLocal(cell.value)"
-            :class="{
-              marked: isBalotaMarcada(cell.value),
-              lock: isBalotaMarcada(cell.value) && !isLastMarked(cell.value),
-            }"
-          >
-            {{ cell.value }}
-          </button>
+    <div class="grid-container">
+      <div id="grid-game-board" class="board-y">
+        <div v-for="(column, columnIndex) in tableroData" :key="columnIndex" class="group">
+          <div v-for="cell in column" :key="cell.id" class="cell">
+            <button v-if="cell.type === 'letter'" :id="cell.id" class="btn-ggb letter lock">
+              {{ cell.value }}
+            </button>
+            <button
+              v-else-if="cell.type === 'number'"
+              :id="cell.id"
+              class="btn-ggb num"
+              @click="marcarBalotaLocal(cell.value)"
+              :class="{
+                marked: isBalotaMarcada(cell.value),
+                lock: isBalotaMarcada(cell.value) && !isLastMarked(cell.value),
+              }"
+            >
+              {{ cell.value }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -93,7 +95,7 @@ export default {
         if (isLast) {
           balotasMarcadasLocal.value.shift()
 
-          emit("desmarcar-balota", balotasMarcadasLocal.value) 
+          emit("desmarcar-balota", balotasMarcadasLocal.value)
           console.log("Desmarcando balota:", balotaString, "Nuevas marcadas local:", balotasMarcadasLocal.value)
         } else {
           console.log("Balota ya marcada y bloqueada:", balotaString)
@@ -185,17 +187,23 @@ export default {
 <style scoped>
 /* game-board */
 #game-board {
-  background-color: rgb(36, 113, 163);
+  /* background-color: rgb(36, 113, 163); */
   border-radius: 4px;
-  padding: 2px;
+  /* padding: 2px; */
   display: grid;
+  grid-template-rows: 1fr auto;
   gap: 2px;
+  /* place-items: inherit; */
 }
 
 /* Grid Game Board */
 #grid-game-board {
+  background-color: #2471a3;
+  padding: 2px;
   display: grid;
   gap: 2px;
+  /* max-height: 80vh; */
+  /* aspect-ratio: 7 / 16; */
 }
 
 /* Horizontal Grid */
@@ -211,7 +219,7 @@ export default {
   grid-template-columns: repeat(5, 1fr);
 }
 #grid-game-board.board-y .group {
-  grid-template-rows: repeat(16, 1fr);
+  grid-template-rows: auto repeat(15, 1fr);
 }
 
 /* Groups and Cells */
@@ -229,8 +237,8 @@ export default {
   aspect-ratio: 16 / 9;
   border: none;
   border-radius: 2px;
-  display: grid;
-  place-items: center;
+  /* display: grid; */
+  /* place-items: center; */
   cursor: pointer;
   user-select: none;
 }
@@ -238,17 +246,19 @@ export default {
 /* Letter Button */
 #grid-game-board .letter {
   background-color: rgb(84, 153, 199);
-  font-size: 3.2rem;
+  font-size: 2.4rem;
   font-weight: var(--fw-bold);
-  padding: calc(var(--gap) / 2);
+  aspect-ratio: inherit;
+  padding: calc(var(--gap));
 }
 
 /* Number Button */
 #grid-game-board .num {
   background-color: rgb(251, 252, 252);
   color: rgb(52, 73, 94);
-  font-size: 2.4rem;
+  font-size: 4rem;
   font-weight: var(--fw-bold);
+  padding: calc(var(--gap) / 2);
 }
 
 /* Letter Button Status */
@@ -272,15 +282,17 @@ export default {
 }
 
 /* Number Button Status */
-#grid-game-board .num:hover {
-  background-color: rgb(255, 170, 51);
-  color: var(--color-white);
+@media (hover: hover) {
+  #grid-game-board .num:hover {
+    background-color: rgb(255, 170, 51);
+    color: var(--color-white);
+  }
 }
 #grid-game-board .num:active {
-  background-color: rgb(228, 155, 15);
-  color: rgb(243, 229, 171);
-  text-shadow: 2px 2px 3px rgba(139, 64, 0, 0.74);
-  box-shadow: inset 0 0 12px 2px rgba(139, 64, 0, 0.64);
+  /* background-color: rgb(228, 155, 15); */
+  /* color: rgb(243, 229, 171); */
+  /* text-shadow: 2px 2px 3px rgba(139, 64, 0, 0.74); */
+  /* box-shadow: inset 0 0 12px 2px rgba(139, 64, 0, 0.64); */
 }
 #grid-game-board .num.marked {
   background-color: rgb(193, 154, 107);

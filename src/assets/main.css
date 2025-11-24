@@ -16,7 +16,7 @@ header {
   background-color: rgb(115, 147, 179);
   padding: var(--gap) calc(var(--gap) * 2);
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto max-content 1fr;
   gap: calc(var(--gap) * 2);
   align-items: center;
 }

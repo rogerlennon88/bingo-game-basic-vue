@@ -221,11 +221,16 @@ export default {
 
 <style scoped>
 /* game-mode */
+#game-mode {
+  grid-template-rows: auto 1fr auto;
+  place-items: inherit;
+}
 /* ... (Los estilos CSS permanecen sin cambios) ... */
 .layout-mode {
   background-color: rgb(229, 228, 226);
   padding: calc(var(--gap) / 2);
   border-radius: 4px;
+  display: grid;
 }
 
 /* Grid Game Mode */
@@ -239,6 +244,7 @@ export default {
 #grid-game-mode .group {
   display: grid;
   gap: 2px;
+  grid-template-rows: auto repeat(5, 1fr);
 }
 #grid-game-mode .cell {
   display: grid;
@@ -247,11 +253,11 @@ export default {
 /* General Buttons */
 #grid-game-mode .btn-ggm {
   color: white;
-  aspect-ratio: 1 / 1;
+  /* aspect-ratio: 1 / 1; */
   border: none;
   border-radius: 2px;
-  display: grid;
-  place-items: center;
+  /* display: grid; */
+  /* place-items: center; */
   cursor: pointer;
   user-select: none;
 }
@@ -351,7 +357,7 @@ export default {
 
 /* Estilos para los controles del módulo */
 #game-mode--control {
-  background-color: rgba(237, 234, 222, 0.75);
+  /* background-color: rgba(237, 234, 222, 0.75); */
   width: 100%;
   padding: var(--gap);
   border-radius: calc(var(--gap) / 2);

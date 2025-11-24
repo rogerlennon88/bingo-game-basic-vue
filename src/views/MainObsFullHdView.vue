@@ -58,8 +58,7 @@
       </section>
     </section>
     <section id="main-obs-fullhd--prize-info">
-      <div class="prize-info ck">
-      </div>
+      <div class="prize-info ck"></div>
     </section>
     <section id="main-obs-fullhd--game-mode">
       <div class="game-mode ck">game-mode</div>
@@ -68,53 +67,67 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from "vue"
+import { ref, computed, watch, onMounted } from "vue"
 import { useRoute } from "vue-router"
-import LastNumber from "../components/modules/LastNumber.vue"
+import { useGameData } from "../composables/useGameData" // Importar Composable
 import "../assets/view-styles/main-obs-fullhd/main.css"
 
 const route = useRoute()
 
-const markedBalls = ref([])
-const lastNumber = computed(() => {
-  return markedBalls.value.length > 0 ? markedBalls.value[0] : ""
-})
+// 1. CONEXIÓN OPTIMIZADA (Polling cada 1s)
+const { markedBalls } = useGameData(1000)
 
-const getColumnLetter = (ballNumber) => {
-  if (ballNumber >= 1 && ballNumber <= 15) return "b"
-  if (ballNumber >= 16 && ballNumber <= 30) return "i"
-  if (ballNumber >= 31 && ballNumber <= 45) return "n"
-  if (ballNumber >= 46 && ballNumber <= 60) return "g"
-  if (ballNumber >= 61 && ballNumber <= 75) return "o"
-  return ""
-}
-
-const displayedNumbers = computed(() => {
-  const result = { 1: "", 2: "", 3: "" }
-  for (let i = 1; i <= 3; i++) {
-    if (markedBalls.value.length > i) {
-      result[i] = markedBalls.value[i]
-    }
-  }
-  return result
-})
-
+// 2. LÓGICA VISUAL
 const letters = ["B", "I", "N", "G", "O"]
 const numbersPerColumn = 15
 const tableroData = ref([])
 const animatingBalls = ref([])
-const animationDuration = 2000 // Duración de la animación en milisegundos
-const updateInterval = ref(null)
+const animationDuration = 2000
+
+// 3. ANIMACIÓN REACTIVA
+watch(
+  markedBalls,
+  (newVal, oldVal) => {
+    if (!oldVal || oldVal.length === 0) return
+
+    const newBalls = newVal.filter((ball) => !oldVal.includes(ball))
+    newBalls.forEach((ball) => {
+      if (!animatingBalls.value.includes(ball)) {
+        animatingBalls.value.push(ball)
+        setTimeout(() => {
+          animatingBalls.value = animatingBalls.value.filter((b) => b !== ball)
+        }, animationDuration)
+      }
+    })
+  },
+  { deep: true }
+)
+
+// 4. COMPUTADAS
+const lastNumber = computed(() => (markedBalls.value.length > 0 ? markedBalls.value[0] : ""))
+
+const displayedNumbers = computed(() => {
+  const result = { 1: "", 2: "", 3: "" }
+  for (let i = 1; i <= 3; i++) {
+    if (markedBalls.value.length > i) result[i] = markedBalls.value[i]
+  }
+  return result
+})
 
 const direction = computed(() => route.params.direction)
+const gridDirectionClass = computed(() => (direction.value === "x" ? "board-x" : "board-y"))
 
-const gridDirectionClass = computed(() => {
-  if (direction.value === "x") {
-    return "board-x"
-  } else {
-    return "board-y"
-  }
-})
+// 5. AUXILIARES
+const getColumnLetter = (ballNumber) => {
+  if (!ballNumber) return ""
+  const n = Number(ballNumber)
+  if (n >= 1 && n <= 15) return "b"
+  if (n >= 16 && n <= 30) return "i"
+  if (n >= 31 && n <= 45) return "n"
+  if (n >= 46 && n <= 60) return "g"
+  if (n >= 61 && n <= 75) return "o"
+  return ""
+}
 
 const generateTableroData = () => {
   const data = []
@@ -129,50 +142,11 @@ const generateTableroData = () => {
   tableroData.value = data
 }
 
-const isBalotaMarcada = (balota) => {
-  return markedBalls.value.includes(String(balota))
-}
-
-const isAnimating = (balota) => {
-  return animatingBalls.value.includes(String(balota))
-}
-
-const cargarDatosGameBoard = async () => {
-  const API_BASE_URL = process.env.VITE_API_BASE_URL;
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/game-board-data`)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    const data = await response.json()
-    const newMarkedBalls = data.markedBalls || []
-
-    // Identificar las nuevas balotas marcadas para la animación
-    newMarkedBalls.forEach((ball) => {
-      if (!markedBalls.value.includes(ball) && !animatingBalls.value.includes(ball)) {
-        animatingBalls.value.push(ball)
-        // Remover la balota de la lista de animación después de la duración
-        setTimeout(() => {
-          animatingBalls.value = animatingBalls.value.filter((b) => b !== ball)
-        }, animationDuration)
-      }
-    })
-
-    markedBalls.value = newMarkedBalls
-  } catch (error) {
-    console.error("Error al cargar los datos del GameBoard:", error)
-  }
-}
+const isBalotaMarcada = (balota) => markedBalls.value.includes(String(balota))
+const isAnimating = (balota) => animatingBalls.value.includes(String(balota))
 
 onMounted(() => {
   generateTableroData()
-  cargarDatosGameBoard()
-  updateInterval.value = setInterval(cargarDatosGameBoard, 1000)
-})
-
-onUnmounted(() => {
-  clearInterval(updateInterval.value)
 })
 </script>
 

@@ -1,4 +1,3 @@
-<!-- src/views/LastNumberView.vue -->
 <template>
   <div id="last-number-view" class="ball">
     {{ lastNumber }}
@@ -6,35 +5,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+import { computed } from "vue"
+import { useGameData } from "../composables/useGameData"
 
-const lastNumber = ref("-")
+const { markedBalls } = useGameData(1000)
 
-async function fetchLastNumber() {
-  const API_BASE_URL = process.env.VITE_API_BASE_URL;
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/game-board-data`)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    const data = await response.json()
-    const markedBalls = data.markedBalls || []
-    lastNumber.value = markedBalls.length > 0 ? markedBalls[0] : ""
-  } catch (error) {
-    console.error("Error al obtener los datos:", error)
-    lastNumber.value = "Error al cargar"
-  }
-}
-
-onMounted(() => {
-  fetchLastNumber()
-  setInterval(fetchLastNumber, 1000) // Actualizar cada 1 segundo
+const lastNumber = computed(() => {
+  return markedBalls.value.length > 0 ? markedBalls.value[0] : ""
 })
 </script>
 
 <style scoped>
-/* last-number-view */
+/* Tus estilos existentes */
 #last-number-view {
   background-color: white;
   color: rgb(25, 25, 112);

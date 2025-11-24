@@ -1,4 +1,3 @@
-<!-- src/views/GameModeView.vue -->
 <template>
   <div id="game-mode-view" class="module">
     <div class="layout-mode">
@@ -26,13 +25,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from "vue"
+import { ref, onMounted } from "vue"
+import { useGameData } from "../composables/useGameData"
+
+// Usamos el composable, pero renombramos la variable para que coincida con tu lógica
+const { gamePattern: markedPattern } = useGameData(1000)
 
 const letters = ["B", "I", "N", "G", "O"]
 const rows = 5
 const gameModeData = ref([])
-const markedPattern = ref([])
-const updateInterval = ref(null) // Referencia para el intervalo
 
 const generateGameModeData = () => {
   const data = []
@@ -48,37 +49,17 @@ const generateGameModeData = () => {
   gameModeData.value = data
 }
 
-const cargarGameModePattern = async () => {
-  const API_BASE_URL = process.env.VITE_API_BASE_URL
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/game-mode-data`)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    const data = await response.json()
-    markedPattern.value = data.gamePattern || []
-  } catch (error) {
-    console.error("Error al cargar el patrón del GameMode en la vista:", error)
-  }
-}
-
 const isPositionMarked = (positionId) => {
   return markedPattern.value.includes(positionId)
 }
 
 onMounted(() => {
   generateGameModeData()
-  cargarGameModePattern()
-  updateInterval.value = setInterval(cargarGameModePattern, 1000) // Establecer el intervalo de actualización
-})
-
-onUnmounted(() => {
-  clearInterval(updateInterval.value) // Limpiar el intervalo cuando el componente se desmonta
 })
 </script>
 
 <style scoped>
+/* Tus estilos existentes intactos */
 /* game-mode-view */
 
 #game-mode-view.module {
@@ -158,7 +139,8 @@ onUnmounted(() => {
 /* Number Span Status */
 #grid-game-mode-view .num.marked {
   background: #bcbd48;
-  background-image: url("../../public/views-media/game-mode/icon--btn-marked--game-mode.png"), linear-gradient(0deg, #65033e 1%, #7f0554 51%, #7f0554);
+  background-image: url("../../public/views-media/game-mode/icon--btn-marked--game-mode.png"),
+    linear-gradient(0deg, #65033e 1%, #7f0554 51%, #7f0554);
   background-size: contain;
   background-repeat: no-repeat;
   border: 6px solid #ffc200;

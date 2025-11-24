@@ -7,19 +7,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue"
-import { useRoute } from "vue-router" // Importa useRoute
+import { computed } from "vue"
+import { useRoute } from "vue-router"
+import { useGameData } from "../composables/useGameData"
 
-const route = useRoute() // Obtén el objeto de la ruta actual
-const markedBalls = ref([])
+const route = useRoute()
+const { markedBalls } = useGameData(1000)
 
-const direction = computed(() => route.params.direction) // Obtén el parámetro 'direction'
+const direction = computed(() => route.params.direction)
+
 const directionClass = computed(() => {
-  if (direction.value === "y") {
-    return "dir-y"
-  } else {
-    return "dir-x" // Clase por defecto
-  }
+  return direction.value === "y" ? "dir-y" : "dir-x"
 })
 
 const displayedNumbers = computed(() => {
@@ -31,36 +29,15 @@ const displayedNumbers = computed(() => {
   }
   return result
 })
-
-async function fetchMarkedBalls() {
-  const API_BASE_URL = process.env.VITE_API_BASE_URL;
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/game-board-data`)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-    const data = await response.json()
-    markedBalls.value = data.markedBalls || []
-  } catch (error) {
-    console.error("Error al obtener los datos:", error)
-    markedBalls.value = [] // En caso de error, mostrar lista vacía
-  }
-}
-
-onMounted(() => {
-  fetchMarkedBalls()
-  setInterval(fetchMarkedBalls, 1000) // Actualizar cada 1 segundo
-})
 </script>
 
 <style scoped>
-/* last-number-list-view */
+/* Tus estilos existentes */
 #last-number-list-view {
   display: grid;
   gap: var(--gap);
 }
-#last-number-list-view li{
+#last-number-list-view li {
   display: flex;
 }
 .dir-x {

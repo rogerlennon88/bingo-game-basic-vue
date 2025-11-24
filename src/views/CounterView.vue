@@ -1,38 +1,20 @@
 <template>
   <div id="counter-view">
-    <div class="data counter-view-data-1" :class="{ actived: counterValue > 0 }">{{ counterValue }}</div>
+    <div class="data counter-view-data-1" :class="{ actived: counter > 0 }">{{ counter }}</div>
     <div class="data counter-view-div">/</div>
     <div class="data counter-view-data-2">75</div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+import { useGameData } from "../composables/useGameData"
 
-const counterValue = ref(0)
-
-async function fetchCounterValue() {
-  const API_BASE_URL = process.env.VITE_API_BASE_URL;
-
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/game-board-data`)
-    if (!response.ok) {
-      throw new Error("HTTP error! status: ${response.status}")
-    }
-    const data = await response.json()
-    counterValue.value = data.counter || 0
-  } catch (error) {
-    console.error("Error al obtener el valor del contador:", error)
-  }
-}
-
-onMounted(() => {
-  fetchCounterValue()
-  setInterval(fetchCounterValue, 1000)
-})
+// El composable se encarga de todo
+const { counter } = useGameData(1000)
 </script>
 
 <style scoped>
+/* Tus estilos CSS existentes se mantienen intactos */
 #counter-view {
   background-color: rgb(169, 169, 169);
   color: rgb(211, 211, 211);
@@ -52,7 +34,7 @@ onMounted(() => {
   place-items: center;
 }
 #counter-view .data.counter-view-data-1,
-#counter-view .data.counter-view-data-2 { 
+#counter-view .data.counter-view-data-2 {
   font-weight: var(--fw-bold);
 }
 #counter-view .data.counter-view-data-1 {

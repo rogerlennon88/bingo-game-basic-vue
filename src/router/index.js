@@ -5,7 +5,7 @@ import LastNumberView from '../views/LastNumberView.vue';
 import LastNumberListView from '../views/LastNumberListView.vue';
 import GameBoardView from '../views/GameBoardView.vue';
 import GameModeView from '../views/GameModeView.vue';
-import CounterView from '../views/CounterView.vue'; // Importa CounterView
+import CounterView from '../views/CounterView.vue';
 import MainObsFullHdView from '../views/MainObsFullHdView.vue';
 
 const router = createRouter({
@@ -45,11 +45,6 @@ const router = createRouter({
       path: '/views/main-obs-fullhd',
       name: 'MainObsFullHdView',
       component: MainObsFullHdView
-    },
-    {
-      path: '/views/main-obs-fullhd-adaptive',
-      name: 'MainObsFullHdAdaptiveView',
-      component: () => import('../views/MainObsFullHdAdaptiveView.vue')
     }
   ]
 });

@@ -1,0 +1,39 @@
+{
+  "config": {
+    "slideDuration": 5000
+  },
+  "patterns": [
+    {
+      "id": 1,
+      "name": "4 Esquinas",
+      "image": "/img/patterns/p1-slide-4esquinas.png",
+      "icon": "/img/patterns/p1-icon-4esquinas.png",
+      "completed": false,
+      "order": 1
+    },
+    {
+      "id": 2,
+      "name": "Cruz",
+      "image": "/img/patterns/p2-slide-cruz.png",
+      "icon": "/img/patterns/p2-icon-cruz.png",
+      "completed": false,
+      "order": 2
+    },
+    {
+      "id": 3,
+      "name": "Equis",
+      "image": "/img/patterns/p3-slide-equis.png",
+      "icon": "/img/patterns/p3-icon-equis.png",
+      "completed": false,
+      "order": 3
+    },
+    {
+      "id": 4,
+      "name": "Cartón Lleno",
+      "image": "/img/patterns/p4-slide-llena.png",
+      "icon": "/img/patterns/p4-icon-llena.png",
+      "completed": false,
+      "order": 4
+    }
+  ]
+}

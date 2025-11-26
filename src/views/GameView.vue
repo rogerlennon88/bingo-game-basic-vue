@@ -12,12 +12,13 @@
     <div class="stack">
       <LastNumber :markedBalls="balotasMarcadas"></LastNumber>
       <LastNumberList :markedBalls="balotasMarcadas"></LastNumberList>
-
-      <div class="counter-group-stack">
-        <Counter />
-        <GameControls @abrir-revision="openModal" />
-      </div>
+      <Counter />
     </div>
+  </section>
+
+  <section class="block">
+    <GameControls @abrir-revision="openModal" />
+    <PatternsControl />
   </section>
 
   <transition name="modal-anim">
@@ -59,11 +60,16 @@ import LastNumberList from "../components/modules/LastNumberList.vue"
 import GameMode from "../components/modules/GameMode.vue"
 import Counter from "../components/modules/Counter.vue"
 import GameControls from "../components/modules/GameControls.vue"
+import PatternsControl from "../components/modules/PatternsControl.vue"
 import ConfirmationModal from "../components/ConfirmationModal.vue"
 import { useGameData } from "../composables/useGameData"
 
 // --- USAR COMPOSABLE ---
-const { markedBalls: balotasMarcadas, gamePattern: loadedGamePattern, fetchData: recargarDatos } = useGameData(1000)
+const { 
+  markedBalls: balotasMarcadas, 
+  gamePattern: loadedGamePattern, 
+  fetchData: recargarDatos 
+} = useGameData(1000)
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || ""
 const isModalOpen = ref(false)
@@ -80,9 +86,7 @@ const ejecutarAccionConfirmada = async () => {
   if (confirmConfig.value.action) await confirmConfig.value.action()
   showConfirm.value = false
 }
-const cancelarConfirmacion = () => {
-  showConfirm.value = false
-}
+const cancelarConfirmacion = () => { showConfirm.value = false }
 
 // --- SOLICITUDES ---
 const solicitarReinicioJuego = () => {
@@ -97,14 +101,8 @@ const solicitarLlenarModo = (fullPattern) => {
   abrirConfirmacion("¿Llenar Patrón?", "Se seleccionarán todas las casillas.", () => handleLlenarGameMode(fullPattern))
 }
 
-const openModal = () => {
-  isModalOpen.value = true
-  document.body.style.overflow = "hidden"
-}
-const closeModal = () => {
-  isModalOpen.value = false
-  document.body.style.overflow = ""
-}
+const openModal = () => { isModalOpen.value = true; document.body.style.overflow = "hidden" }
+const closeModal = () => { isModalOpen.value = false; document.body.style.overflow = "" }
 
 // --- FETCH DE ESCRITURA ---
 const guardarDatosGameBoard = async (datos) => {
@@ -114,9 +112,7 @@ const guardarDatosGameBoard = async (datos) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datos || { markedBalls: balotasMarcadas.value }),
     })
-  } catch (error) {
-    console.error(error)
-  }
+  } catch (error) { console.error(error) }
 }
 
 const guardarDatosGameMode = async (datosAGuardar) => {
@@ -126,9 +122,7 @@ const guardarDatosGameMode = async (datosAGuardar) => {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(datosAGuardar),
     })
-  } catch (error) {
-    console.error(error)
-  }
+  } catch (error) { console.error(error) }
 }
 
 // --- MANEJADORES ---
@@ -162,41 +156,29 @@ const handleReiniciarGameMode = async () => {
 const handleLlenarGameMode = async (fullPattern) => {
   await guardarDatosGameMode({ gamePattern: fullPattern })
   await recargarDatos()
-  // No necesitamos llamar a handlePatternChanged aquí porque el watch del hijo se encargará al recargar datos
 }
 
-// --- ¡ESTA ES LA CORRECCIÓN! ---
+// Guardar y sincronizar patrón cuando cambia desde el modal
 const handlePatternChanged = async (newPattern) => {
-  loadedGamePattern.value = newPattern // Actualización visual inmediata
-  await guardarDatosGameMode({ gamePattern: newPattern }) // Guardar en DB
-  await recargarDatos() // Sincronizar
+  loadedGamePattern.value = newPattern
+  await guardarDatosGameMode({ gamePattern: newPattern })
+  await recargarDatos()
 }
 
 // --- CONTADORES ---
 const disminuirContador = async () => {
-  try {
-    await fetch(`${API_BASE_URL}/api/game-board-data/counter`, { method: "DELETE" })
-  } catch (e) {}
+  try { await fetch(`${API_BASE_URL}/api/game-board-data/counter`, { method: "DELETE" }) } catch (e) {}
 }
 const actualizarContador = async () => {
-  try {
-    await fetch(`${API_BASE_URL}/api/game-board-data/counter`, { method: "PUT" })
-  } catch (e) {}
+  try { await fetch(`${API_BASE_URL}/api/game-board-data/counter`, { method: "PUT" }) } catch (e) {}
 }
 const resetearContador = async () => {
-  try {
-    await fetch(`${API_BASE_URL}/api/game-board-data/counter/reset`, { method: "PUT" })
-  } catch (e) {}
+  try { await fetch(`${API_BASE_URL}/api/game-board-data/counter/reset`, { method: "PUT" }) } catch (e) {}
 }
 </script>
 
 <style scoped>
-/* Tus estilos CSS se mantienen igual */
-.counter-group-stack {
-  display: grid;
-  gap: var(--gap);
-  justify-content: inherit;
-}
+/* Estilos locales para modales */
 .modal-overlay {
   position: fixed;
   top: 0;

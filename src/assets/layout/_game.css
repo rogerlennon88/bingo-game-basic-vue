@@ -5,6 +5,7 @@ main.game {
   gap: calc(var(--gap));
   display: grid;
   grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr auto;
 }
 
 main.game > .block {
@@ -12,9 +13,28 @@ main.game > .block {
   padding: calc(var(--gap));
 }
 
+/* Bloque del Tablero (Centro/Izquierda) */
 main.game .block:nth-child(1) {
-  order: 2; /* Mueve el primer elemento al segundo orden */
+  order: 2;
+  grid-row: 2 / 1 span;
+  grid-column: 1 / auto;
 }
+
+/* Bloque Superior (Historial y Última Balota) */
 main.game .block:nth-child(2) {
-  order: 1; /* Mueve el segundo elemento al primer orden */
+  order: 1;
+  grid-row: 1 / auto;
+  grid-column: 1 / 2 span;
+}
+
+/* Bloque Lateral (Controles y Patrones) */
+main.game .block:nth-child(3) {
+  order: 3;
+  grid-row: 2 / 1 span;
+  grid-column: 2 / auto;
+
+  /* Para apilar verticalmente el contador y los patrones */
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
 }

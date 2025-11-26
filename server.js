@@ -118,12 +118,62 @@ app.put("/api/game-mode-data", async (req, res) => {
   }
 })
 
+// --- RUTAS DE PATRONES (SLIDER) ---
+const fsPromises = fs // Asegúrate de usar fs.promises o la importación que ya tenías
+
+app.get("/api/patterns-data", async (req, res) => {
+  try {
+    const filePath = path.join(__dirname, "data-patterns.json")
+    const data = await fsPromises.readFile(filePath, "utf8")
+    res.json(JSON.parse(data))
+  } catch (error) {
+    console.error("Error al leer data-patterns.json:", error)
+    res.json({ config: { slideDuration: 5000 }, patterns: [] })
+  }
+})
+
+app.put("/api/patterns-data/:id", async (req, res) => {
+  try {
+    const filePath = path.join(__dirname, "data-patterns.json")
+    const fileContent = await fsPromises.readFile(filePath, "utf8")
+    const db = JSON.parse(fileContent)
+
+    const patternId = parseInt(req.params.id)
+    const patternIndex = db.patterns.findIndex((p) => p.id === patternId)
+
+    if (patternIndex !== -1) {
+      db.patterns[patternIndex].completed = !db.patterns[patternIndex].completed
+      await fsPromises.writeFile(filePath, JSON.stringify(db, null, 2), "utf8")
+      res.json({ message: "Estado actualizado", pattern: db.patterns[patternIndex] })
+    } else {
+      res.status(404).json({ error: "Patrón no encontrado" })
+    }
+  } catch (error) {
+    res.status(500).json({ error: "Error interno" })
+  }
+})
+
+app.put("/api/patterns-data/reset", async (req, res) => {
+  try {
+    const filePath = path.join(__dirname, "data-patterns.json")
+    const fileContent = await fsPromises.readFile(filePath, "utf8")
+    const db = JSON.parse(fileContent)
+
+    db.patterns = db.patterns.map((p) => ({ ...p, completed: false }))
+
+    await fsPromises.writeFile(filePath, JSON.stringify(db, null, 2), "utf8")
+    res.json({ message: "Reset completo" })
+  } catch (error) {
+    res.status(500).json({ error: "Error al resetear" })
+  }
+})
+
 // --- FINAL CATCH-ALL (SPA) ---
 // Usamos app.use sin ruta específica, Express lo ejecuta si ninguna ruta anterior coincidió.
 app.use((req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"));
-});
+  res.sendFile(path.join(__dirname, "dist", "index.html"))
+})
 
 app.listen(port, () => {
-  console.log(`Servidor backend escuchando en http://localhost:${port}`);
-});
+  console.log(`Servidor backend escuchando en http://localhost:${port}`)
+})

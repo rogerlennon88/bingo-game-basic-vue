@@ -4,46 +4,46 @@ export function useGameData(pollInterval = 1000) {
   const markedBalls = ref([]);
   const gamePattern = ref([]);
   const counter = ref(0);
-  const error = ref(null);
   
+  // NUEVO: Patrones
+  const patternsList = ref([]);
+  const sliderConfig = ref({ slideDuration: 5000 });
+  
+  const error = ref(null);
   let intervalId = null;
-
-  // CORRECCIÓN CLAVE: Usamos import.meta.env y aseguramos que si no hay nada, sea ''
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
   const fetchData = async () => {
     try {
-      // Los console.log ayudan a depurar si la URL está mal formada
-      // console.log("Fetching from:", `${API_BASE_URL}/api/game-board-data`);
-      
-      const [boardRes, modeRes] = await Promise.all([
+      const [boardRes, modeRes, patternRes] = await Promise.all([
         fetch(`${API_BASE_URL}/api/game-board-data`),
-        fetch(`${API_BASE_URL}/api/game-mode-data`)
+        fetch(`${API_BASE_URL}/api/game-mode-data`),
+        fetch(`${API_BASE_URL}/api/patterns-data`)
       ]);
 
-      if (!boardRes.ok || !modeRes.ok) {
-        throw new Error('Error de sincronización con el servidor');
-      }
+      if (!boardRes.ok || !modeRes.ok || !patternRes.ok) throw new Error('Error sync');
 
       const boardData = await boardRes.json();
       const modeData = await modeRes.json();
+      const patternData = await patternRes.json();
 
       markedBalls.value = boardData.markedBalls || [];
       counter.value = boardData.counter || 0;
       gamePattern.value = modeData.gamePattern || [];
-      error.value = null; // Limpiar error si tiene éxito
       
+      patternsList.value = patternData.patterns || [];
+      sliderConfig.value = patternData.config || { slideDuration: 5000 };
+      
+      error.value = null;
     } catch (err) {
-      console.error("Polling Error:", err);
+      // console.error(err); // Descomentar para debug
       error.value = err.message;
     }
   };
 
   onMounted(() => {
     fetchData();
-    if (pollInterval > 0) {
-      intervalId = setInterval(fetchData, pollInterval);
-    }
+    if (pollInterval > 0) intervalId = setInterval(fetchData, pollInterval);
   });
 
   onUnmounted(() => {
@@ -54,6 +54,8 @@ export function useGameData(pollInterval = 1000) {
     markedBalls,
     gamePattern,
     counter,
+    patternsList,
+    sliderConfig,
     error,
     fetchData 
   };

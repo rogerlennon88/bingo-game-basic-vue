@@ -121,7 +121,7 @@ export default {
       } else {
         selectedPattern.value.splice(index, 1)
       }
-      // Emitimos cambio, NO guardamos (el padre lo hará)
+      // Actualización optimista: visualmente es inmediato
       emit("pattern-changed", [...selectedPattern.value])
     }
 
@@ -146,7 +146,6 @@ export default {
 
     onMounted(() => {
       generateGameModeData()
-      // IMPORTANTE: Aquí borramos cualquier lógica de fetch antigua
     })
 
     return {
@@ -212,6 +211,16 @@ export default {
   font-size: 1.2rem;
   font-weight: var(--fw-bold);
 }
+
+/* --- AQUÍ ESTÁ EL CAMBIO SOLICITADO --- */
+/* Comportamiento Hover idéntico al GameBoard */
+@media (hover: hover) {
+  #grid-game-mode .num:hover {
+    background-color: rgb(255, 170, 51);
+    color: var(--color-white);
+  }
+}
+
 #grid-game-mode .letter:hover {
   background-color: rgb(138, 154, 91);
   color: rgb(95, 133, 117);

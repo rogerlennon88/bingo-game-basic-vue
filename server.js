@@ -1,179 +1,99 @@
-// server.js
-
 import express from "express"
-import bodyParser from "body-parser"
+import { createServer } from "http"
+import { Server } from "socket.io"
 import { promises as fs } from "fs"
 import path from "path"
 import { fileURLToPath } from "url"
 import cors from "cors"
+import { JSONFilePreset } from "lowdb/node"
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
+
 const app = express()
+const httpServer = createServer(app)
 const port = 3000
 
-// CORS ya no es estrictamente necesario si usamos el mismo origen,
-// pero es buena práctica dejarlo por seguridad.
-app.use(cors())
-app.use(bodyParser.json())
+// Configuración de Socket.io
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*", // Permite conexiones desde cualquier dispositivo en la red local
+    methods: ["GET", "POST"],
+  },
+})
 
-// 1. Servir archivos estáticos (JS, CSS, Imágenes)
+app.use(cors())
+app.use(express.json())
 app.use(express.static(path.join(__dirname, "dist")))
 
-// --- RUTAS API (Siempre deben ir ANTES del catch-all) ---
+// --- CONFIGURACIÓN DE BASE DE DATOS (LOWDB) ---
+let db
 
-// Rutas para GameBoard data
-app.get("/api/game-board-data", async (req, res) => {
+async function initDatabase() {
+  const dataDir = path.join(__dirname, "data")
+  const dbPath = path.join(dataDir, "db.json")
+  const seedPath = path.join(dataDir, "db-seed.json")
+
+  // Crear carpeta data si no existe
   try {
-    const filePath = path.join(__dirname, "data-game-board.json")
-    const data = await fs.readFile(filePath, "utf8")
-    res.json(JSON.parse(data))
+    await fs.mkdir(dataDir, { recursive: true })
+  } catch (err) {}
+
+  // Revisar si existe db.json, si no, copiar desde el seed
+  try {
+    await fs.access(dbPath)
   } catch (error) {
-    console.error("Error al leer data-game-board.json:", error)
-    res.status(500).json({ error: "Error al leer los datos del tablero de juego" })
-  }
-})
-
-app.put("/api/game-board-data", async (req, res) => {
-  try {
-    const filePath = path.join(__dirname, "data-game-board.json")
-    const fileContent = await fs.readFile(filePath, "utf8")
-    const gameData = JSON.parse(fileContent)
-    gameData.markedBalls = req.body.markedBalls
-    const gameDataString = JSON.stringify(gameData, null, 2)
-    await fs.writeFile(filePath, gameDataString, { encoding: "utf8", flag: "w" })
-    res.json({ message: "Datos del tablero de juego guardados correctamente" })
-  } catch (error) {
-    console.error("Error al guardar en data-game-board.json:", error)
-    res.status(500).json({ error: "Error al guardar los datos del tablero de juego" })
-  }
-})
-
-app.put("/api/game-board-data/counter", async (req, res) => {
-  try {
-    const filePath = path.join(__dirname, "data-game-board.json")
-    const fileContent = await fs.readFile(filePath, "utf8")
-    const gameData = JSON.parse(fileContent)
-    gameData.counter = (gameData.counter || 0) + 1
-    const gameDataString = JSON.stringify(gameData, null, 2)
-    await fs.writeFile(filePath, gameDataString, { encoding: "utf8", flag: "w" })
-    res.json({ message: "Contador actualizado correctamente" })
-  } catch (error) {
-    console.error("Error al actualizar el contador en data-game-board.json:", error)
-    res.status(500).json({ error: "Error al actualizar el contador" })
-  }
-})
-
-app.delete("/api/game-board-data/counter", async (req, res) => {
-  try {
-    const filePath = path.join(__dirname, "data-game-board.json")
-    const fileContent = await fs.readFile(filePath, "utf8")
-    const gameData = JSON.parse(fileContent)
-    gameData.counter = Math.max(0, (gameData.counter || 0) - 1)
-    const gameDataString = JSON.stringify(gameData, null, 2)
-    await fs.writeFile(filePath, gameDataString, { encoding: "utf8", flag: "w" })
-    res.json({ message: "Contador disminuido correctamente" })
-  } catch (error) {
-    console.error("Error al disminuir el contador en data-game-board.json:", error)
-    res.status(500).json({ error: "Error al disminuir el contador" })
-  }
-})
-
-app.put("/api/game-board-data/counter/reset", async (req, res) => {
-  try {
-    const filePath = path.join(__dirname, "data-game-board.json")
-    const fileContent = await fs.readFile(filePath, "utf8")
-    const gameData = JSON.parse(fileContent)
-    gameData.counter = 0
-    const gameDataString = JSON.stringify(gameData, null, 2)
-    await fs.writeFile(filePath, gameDataString, { encoding: "utf8", flag: "w" })
-    res.json({ message: "Contador reseteado correctamente" })
-  } catch (error) {
-    console.error("Error al resetear el contador en data-game-board.json:", error)
-    res.status(500).json({ error: "Error al resetear el contador" })
-  }
-})
-
-// Rutas para GameMode data
-app.get("/api/game-mode-data", async (req, res) => {
-  try {
-    const filePath = path.join(__dirname, "data-game-mode.json")
-    const data = await fs.readFile(filePath, "utf8")
-    res.json(JSON.parse(data))
-  } catch (error) {
-    console.error("Error al leer data-game-mode.json:", error)
-    res.status(500).json({ error: "Error al leer los datos del modo de juego" })
-  }
-})
-
-app.put("/api/game-mode-data", async (req, res) => {
-  try {
-    const filePath = path.join(__dirname, "data-game-mode.json")
-    const gameModeData = JSON.stringify(req.body, null, 2)
-    await fs.writeFile(filePath, gameModeData, "utf8")
-    res.json({ message: "Datos del modo de juego guardados correctamente" })
-  } catch (error) {
-    console.error("Error al guardar en data-game-mode.json:", error)
-    res.status(500).json({ error: "Error al guardar los datos del modo de juego" })
-  }
-})
-
-// --- RUTAS DE PATRONES (SLIDER) ---
-const fsPromises = fs // Asegúrate de usar fs.promises o la importación que ya tenías
-
-app.get("/api/patterns-data", async (req, res) => {
-  try {
-    const filePath = path.join(__dirname, "data-patterns.json")
-    const data = await fsPromises.readFile(filePath, "utf8")
-    res.json(JSON.parse(data))
-  } catch (error) {
-    console.error("Error al leer data-patterns.json:", error)
-    res.json({ config: { slideDuration: 5000 }, patterns: [] })
-  }
-})
-
-app.put("/api/patterns-data/:id", async (req, res) => {
-  try {
-    const filePath = path.join(__dirname, "data-patterns.json")
-    const fileContent = await fsPromises.readFile(filePath, "utf8")
-    const db = JSON.parse(fileContent)
-
-    const patternId = parseInt(req.params.id)
-    const patternIndex = db.patterns.findIndex((p) => p.id === patternId)
-
-    if (patternIndex !== -1) {
-      db.patterns[patternIndex].completed = !db.patterns[patternIndex].completed
-      await fsPromises.writeFile(filePath, JSON.stringify(db, null, 2), "utf8")
-      res.json({ message: "Estado actualizado", pattern: db.patterns[patternIndex] })
-    } else {
-      res.status(404).json({ error: "Patrón no encontrado" })
+    console.log("Creando nueva base de datos desde la semilla...")
+    try {
+      const seedData = await fs.readFile(seedPath, "utf-8")
+      await fs.writeFile(dbPath, seedData, "utf-8")
+    } catch (seedError) {
+      console.error("Error al leer db-seed.json. Asegúrate de que exista.", seedError)
+      process.exit(1)
     }
-  } catch (error) {
-    res.status(500).json({ error: "Error interno" })
   }
+
+  // Inicializar Lowdb
+  const defaultData = { config: {}, gameState: {} }
+  db = await JSONFilePreset(dbPath, defaultData)
+  console.log("Base de datos cargada correctamente.")
+}
+
+// --- SOCKET.IO LÓGICA ---
+io.on("connection", (socket) => {
+  console.log(`Usuario conectado: ${socket.id}`)
+
+  // Enviar el estado actual al cliente apenas se conecta
+  socket.emit("initialState", db.data)
+
+  // Escuchar actualizaciones del estado del juego
+  socket.on("updateGameState", async (newGameState) => {
+    db.data.gameState = { ...db.data.gameState, ...newGameState }
+    await db.write()
+    // Emitir a TODOS los clientes (incluyendo al que envió el evento)
+    io.emit("stateUpdated", db.data)
+  })
+
+  // Escuchar actualizaciones de configuración (ej: completar patrones)
+  socket.on("updateConfig", async (newConfig) => {
+    db.data.config = { ...db.data.config, ...newConfig }
+    await db.write()
+    io.emit("stateUpdated", db.data)
+  })
+
+  socket.on("disconnect", () => {
+    console.log(`Usuario desconectado: ${socket.id}`)
+  })
 })
 
-app.put("/api/patterns-data/reset", async (req, res) => {
-  try {
-    const filePath = path.join(__dirname, "data-patterns.json")
-    const fileContent = await fsPromises.readFile(filePath, "utf8")
-    const db = JSON.parse(fileContent)
-
-    db.patterns = db.patterns.map((p) => ({ ...p, completed: false }))
-
-    await fsPromises.writeFile(filePath, JSON.stringify(db, null, 2), "utf8")
-    res.json({ message: "Reset completo" })
-  } catch (error) {
-    res.status(500).json({ error: "Error al resetear" })
-  }
-})
-
-// --- FINAL CATCH-ALL (SPA) ---
-// Usamos app.use sin ruta específica, Express lo ejecuta si ninguna ruta anterior coincidió.
+// Final Catch-All (SPA)
 app.use((req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"))
 })
 
-app.listen(port, () => {
-  console.log(`Servidor backend escuchando en http://localhost:${port}`)
+// Arrancar servidor
+initDatabase().then(() => {
+  httpServer.listen(port, () => {
+    console.log(`Servidor maestro escuchando en http://0.0.0.0:${port}`)
+  })
 })

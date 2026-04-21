@@ -1,5 +1,3 @@
-<!-- src/components/modules/LastNumber.vue -->
-
 <template>
   <div id="last-number" class="module">
     <h2 class="title-2">Última Balota</h2>
@@ -7,31 +5,20 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { computed } from "vue"
+import { useAppStore } from "../../stores/appStore"
 
-export default {
-  name: "LastNumber",
-  props: {
-    markedBalls: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  setup(props) {
-    const ultimaBalota = computed(() => {
-      return props.markedBalls.length > 0 ? props.markedBalls[0] : ""
-    })
+const store = useAppStore()
 
-    return {
-      ultimaBalota,
-    }
-  },
-}
+const ultimaBalota = computed(() => {
+  const balls = store.gameState.markedBalls
+  return balls.length > 0 ? balls[0] : ""
+})
 </script>
 
 <style scoped>
-/* last-number */
+/* Pega aquí exactamente los mismos estilos de tu LastNumber.vue original */
 #last-number {
   padding-bottom: calc(var(--gap) * 1.5);
 }
@@ -44,7 +31,6 @@ export default {
   border: 6px solid rgba(233, 220, 201, 0.75);
   border-radius: 100%;
 }
-
 .ball {
   min-width: 84px;
   min-height: 84px;

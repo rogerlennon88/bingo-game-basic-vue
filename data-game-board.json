@@ -1,4 +1,7 @@
 {
-  "markedBalls": [],
-  "counter": 0
+  "markedBalls": [
+    "1",
+    "16"
+  ],
+  "counter": 2
 }

@@ -1,5 +1,3 @@
-<!-- src/components/modules/GameControls.vue -->
-
 <template>
   <div id="game-controls" class="module">
     <ul class="game-controls-list">
@@ -13,18 +11,12 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "GameControls",
-  emits: ["abrir-revision"],
-  setup() {
-    return {}
-  },
-}
+<script setup>
+defineEmits(["abrir-revision"])
 </script>
 
 <style scoped>
-/* game-controls */
+/* Estilos originales intactos */
 #game-controls {
   background-color: transparent;
   border: none;
@@ -37,7 +29,6 @@ export default {
   gap: var(--gap);
   grid-auto-flow: column;
 }
-
 #game-controls .btn {
   grid-auto-flow: dense;
 }

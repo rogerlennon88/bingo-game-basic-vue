@@ -15,6 +15,7 @@ coverage
 *.local
 
 # Archivos de datos
+data/db.json
 data-game-board.json
 data-game-mode.json
 

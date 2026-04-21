@@ -1,58 +1,28 @@
-// src/router/index.js
-import { createRouter, createWebHistory } from "vue-router"
-import GameView from "../views/GameView.vue"
-import LastNumberView from "../views/LastNumberView.vue"
-import LastNumberListView from "../views/LastNumberListView.vue"
-import GameBoardView from "../views/GameBoardView.vue"
-import GameModeView from "../views/GameModeView.vue"
-import CounterView from "../views/CounterView.vue"
-import MainObsFullHdView from "../views/MainObsFullHdView.vue"
-import PatternsSliderView from "../views/PatternsSliderView.vue"
+import { createRouter, createWebHistory } from "vue-router";
+// Importamos las nuevas vistas (las crearemos a continuación)
+import DashboardView from "../views/DashboardView.vue";
+import StageMasterView from "../views/obs/StageMasterView.vue";
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: "/",
-      name: "Game",
-      component: GameView,
+      name: "Dashboard",
+      component: DashboardView,
     },
     {
-      path: "/views/last-number",
-      name: "LastNumberView",
-      component: LastNumberView,
+      path: "/views/obs/stage",
+      name: "StageMaster",
+      component: StageMasterView,
     },
+    // Mantendremos las vistas individuales por si las necesitas en OBS por separado
     {
-      path: "/views/last-number-list/:direction?",
-      name: "LastNumberList",
-      component: LastNumberListView,
-    },
-    {
-      path: "/views/game-board/:direction?",
-      name: "GameBoardView",
-      component: GameBoardView,
-    },
-    {
-      path: "/views/game-mode",
-      name: "GameModeView",
-      component: GameModeView,
-    },
-    {
-      path: "/views/counter",
-      name: "CounterView",
-      component: CounterView,
-    },
-    {
-      path: "/views/main-obs-fullhd",
-      name: "MainObsFullHdView",
-      component: MainObsFullHdView,
-    },
-    {
-      path: "/views/patterns-slider",
-      name: "PatternsSliderView",
-      component: PatternsSliderView,
+      path: "/views/game-board",
+      name: "LegacyGameBoard",
+      component: () => import("../views/GameBoardView.vue"),
     },
   ],
-})
+});
 
-export default router
+export default router;

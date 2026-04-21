@@ -13,9 +13,9 @@
                 num: cell.type === 'number' && !cell.isMiddle,
                 middle: cell.isMiddle,
                 lock: cell.type === 'letter' || cell.isMiddle,
-                marked: selectedPattern.includes(cell.id),
+                marked: isMarked(cell.id),
               }"
-              @click="cell.type === 'number' && togglePattern(cell.id)"
+              @click="cell.type === 'number' && !cell.isMiddle && togglePosition(cell.id)"
             >
               {{ cell.value }}
             </button>
@@ -32,8 +32,8 @@
             class="btn btn-primary"
             type="button"
             title="Limpiar Patrón de Juego"
-            @click="$emit('reiniciar-modo')"
-            :class="{ lock: isClearModeDisabled, disabled: isClearModeDisabled }"
+            @click="clearPattern"
+            :class="{ lock: !hasSelectedPattern, disabled: !hasSelectedPattern }"
           >
             <span class="btn-text">Limpiar Patrón</span>
           </button>
@@ -44,8 +44,8 @@
             class="btn btn-primary"
             type="button"
             title="Llenar Patrón de Juego Completo"
-            @click="llenarModoLocal"
-            :class="{ lock: isFillModeDisabled, disabled: isFillModeDisabled }"
+            @click="fillPattern"
+            :class="{ lock: isPatternFull, disabled: isPatternFull }"
           >
             <span class="btn-text">Llenar Patrón</span>
           </button>
@@ -55,8 +55,9 @@
   </div>
 </template>
 
-<script>
-import { ref, watch, onMounted, computed } from "vue"
+<script setup>
+import { computed } from "vue"
+import { useAppStore } from "../../stores/appStore"
 
 const FULL_PATTERN = [
   "b1",
@@ -85,83 +86,56 @@ const FULL_PATTERN = [
   "o5",
 ]
 
-export default {
-  name: "GameMode",
-  emits: ["pattern-changed", "reiniciar-modo", "llenar-modo"],
-  props: {
-    initialPattern: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  setup(props, { emit }) {
-    const letters = ["B", "I", "N", "G", "O"]
-    const rows = 5
-    const gameModeData = ref([])
-    const selectedPattern = ref([...props.initialPattern])
+const store = useAppStore()
 
-    const generateGameModeData = () => {
-      const data = []
-      letters.forEach((letter, columnIndex) => {
-        const column = []
-        column.push({ type: "letter", value: letter, id: `${letter.toLowerCase()}-ggm` })
-        for (let rowIndex = 1; rowIndex <= rows; rowIndex++) {
-          const id = `${letter.toLowerCase()}${rowIndex}`
-          column.push({ type: "number", value: id, id: id, isMiddle: letter === "N" && rowIndex === 3 })
-        }
-        data.push(column)
-      })
-      gameModeData.value = data
+// Generador de la cuadrícula estática
+const letters = ["B", "I", "N", "G", "O"]
+const gameModeData = computed(() => {
+  const data = []
+  letters.forEach((letter) => {
+    const column = [{ type: "letter", value: letter, id: `${letter.toLowerCase()}-ggm` }]
+    for (let rowIndex = 1; rowIndex <= 5; rowIndex++) {
+      const id = `${letter.toLowerCase()}${rowIndex}`
+      column.push({ type: "number", value: id, id: id, isMiddle: letter === "N" && rowIndex === 3 })
     }
+    data.push(column)
+  })
+  return data
+})
 
-    const togglePattern = (positionId) => {
-      const index = selectedPattern.value.indexOf(positionId)
-      if (index === -1) {
-        selectedPattern.value.unshift(positionId)
-      } else {
-        selectedPattern.value.splice(index, 1)
-      }
-      // Actualización optimista: visualmente es inmediato
-      emit("pattern-changed", [...selectedPattern.value])
-    }
+const currentPattern = computed(() => store.gameState.gamePattern || [])
 
-    // Sincronizar cambios que vengan del servidor
-    watch(
-      () => props.initialPattern,
-      (newPattern) => {
-        selectedPattern.value = [...newPattern]
-      },
-      { deep: true }
-    )
+const isMarked = (id) => currentPattern.value.includes(id)
+const hasSelectedPattern = computed(() => currentPattern.value.length > 0)
+const isPatternFull = computed(() => currentPattern.value.length === FULL_PATTERN.length)
 
-    const hasSelectedPattern = computed(() => selectedPattern.value.length > 0)
-    const isClearModeDisabled = computed(() => !hasSelectedPattern.value)
+const togglePosition = (positionId) => {
+  let newPattern = [...currentPattern.value]
+  const index = newPattern.indexOf(positionId)
 
-    const isPatternFull = computed(() => selectedPattern.value.length === FULL_PATTERN.length)
-    const isFillModeDisabled = computed(() => isPatternFull.value)
+  if (index === -1) {
+    newPattern.unshift(positionId)
+  } else {
+    newPattern.splice(index, 1)
+  }
 
-    const llenarModoLocal = () => {
-      emit("llenar-modo", FULL_PATTERN)
-    }
+  store.updateGameState({ gamePattern: newPattern })
+}
 
-    onMounted(() => {
-      generateGameModeData()
-    })
+const clearPattern = () => {
+  if (confirm("¿Limpiar Patrón? Se borrará el patrón actual.")) {
+    store.updateGameState({ gamePattern: [] })
+  }
+}
 
-    return {
-      gameModeData,
-      togglePattern,
-      selectedPattern,
-      isClearModeDisabled,
-      isFillModeDisabled,
-      llenarModoLocal,
-    }
-  },
+const fillPattern = () => {
+  if (confirm("¿Llenar Patrón? Se seleccionarán todas las casillas.")) {
+    store.updateGameState({ gamePattern: [...FULL_PATTERN] })
+  }
 }
 </script>
 
 <style scoped>
-/* Tus estilos CSS existentes se mantienen IGUALES */
 #game-mode {
   grid-template-rows: auto 1fr auto;
   place-items: inherit;
@@ -212,8 +186,6 @@ export default {
   font-weight: var(--fw-bold);
 }
 
-/* --- AQUÍ ESTÁ EL CAMBIO SOLICITADO --- */
-/* Comportamiento Hover idéntico al GameBoard */
 @media (hover: hover) {
   #grid-game-mode .num:hover {
     background-color: rgb(255, 170, 51);
@@ -254,16 +226,6 @@ export default {
 }
 #grid-game-mode .group:last-child .cell:first-child button {
   border-top-right-radius: 4px;
-}
-#game-mode .options-mode {
-  display: grid;
-}
-#game-mode .options-mode .btn-opm {
-  font-size: 1.6rem;
-  padding: 8px 16px;
-  font-weight: var(--fw-bold);
-  border: none;
-  border-radius: 4px;
 }
 #game-mode--control {
   width: 100%;

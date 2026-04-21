@@ -1,5 +1,3 @@
-<!-- src/components/modules/LastNumberList.vue -->
-
 <template>
   <div id="last-number-list" class="module">
     <h2>Últimas 4 Balotas</h2>
@@ -14,31 +12,19 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { computed } from "vue"
+import { useAppStore } from "../../stores/appStore"
 
-export default {
-  name: "LastNumberList",
-  props: {
-    markedBalls: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  setup(props) {
-    const displayedBalls = computed(() => {
-      return props.markedBalls.slice(1, 5) // Tomar desde el segundo hasta el quinto elemento
-    })
+const store = useAppStore()
 
-    return {
-      displayedBalls,
-    }
-  },
-}
+const displayedBalls = computed(() => {
+  return store.gameState.markedBalls.slice(1, 5) // Tomar desde el segundo hasta el quinto elemento
+})
 </script>
 
 <style scoped>
-/* last-number-list */
+/* Pega aquí exactamente los mismos estilos de tu LastNumberList.vue original */
 #last-number-list {
   padding-bottom: calc(var(--gap) * 1.5);
 }
@@ -48,7 +34,6 @@ export default {
   gap: var(--gap);
   place-content: center;
 }
-
 #last-number-list .number-list .item {
   display: grid;
 }
@@ -61,7 +46,6 @@ export default {
   border: 3px solid rgba(233, 220, 201, 0.75);
   border-radius: 50%;
 }
-
 .ball {
   min-width: 64px;
   aspect-ratio: 1 / 1;

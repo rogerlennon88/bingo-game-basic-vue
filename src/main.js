@@ -1,14 +1,15 @@
-// src/main.js
 import "./assets/main.css"
 import { createApp } from "vue"
+import { createPinia } from "pinia"
 import App from "./components/App.vue"
-import router from "./router" // Importa el router
+import router from "./router"
 
 const app = createApp(App)
+const pinia = createPinia()
 
-app.use(router) // Usa el router
+app.use(pinia)
+app.use(router)
 
-// Espera a que la ruta esté lista antes de montar la aplicación
 router.isReady().then(() => {
   app.mount("#app")
 })

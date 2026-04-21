@@ -1,21 +1,21 @@
 <template>
-  <div id="game-board" class="module">
+  <div id="game-board-control" class="module">
     <div class="grid-container">
       <div id="grid-game-board" class="board-y">
-        <div v-for="(column, columnIndex) in tableroData" :key="columnIndex" class="group">
+        <div v-for="(column, columnIndex) in boardLayout" :key="columnIndex" class="group">
           <div v-for="cell in column" :key="cell.id" class="cell">
-            <button v-if="cell.type === 'letter'" :id="cell.id" class="btn-ggb letter lock">
+            <button v-if="cell.type === 'letter'" class="btn-ggb letter lock">
               {{ cell.value }}
             </button>
+
             <button
-              v-else-if="cell.type === 'number'"
-              :id="cell.id"
+              v-else
               class="btn-ggb num"
-              @click="marcarBalotaLocal(cell.value)"
               :class="{
-                marked: isBalotaMarcada(cell.value),
-                lock: isBalotaMarcada(cell.value) && !isLastMarked(cell.value),
+                marked: isMarked(cell.value),
+                last: isLastMarked(cell.value),
               }"
+              @click="toggleBall(cell.value)"
             >
               {{ cell.value }}
             </button>
@@ -24,99 +24,72 @@
       </div>
     </div>
 
-    <div id="game-board--control" class="module-controls">
-      <ul class="game-controls-list">
-        <li class="game-controls-item">
-          <button
-            id="btn-clear-board"
-            class="btn btn-primary"
-            type="button"
-            title="Limpiar Tablero"
-            @click="$emit('reiniciar-juego')"
-            :class="{ lock: isClearBoardDisabled, disabled: isClearBoardDisabled }"
-          >
-            <span class="btn-text">Limpiar Tablero</span>
-          </button>
-        </li>
-      </ul>
+    <div class="module-controls">
+      <button class="btn btn-primary" @click="confirmReset">Limpiar Tablero</button>
     </div>
   </div>
 </template>
 
-<script>
-import { ref, onMounted, computed } from "vue"
+<script setup>
+import { computed } from "vue"
+import { useAppStore } from "../../stores/appStore"
 
-export default {
-  name: "GameBoard",
-  emits: ["marcar-balota", "desmarcar-balota", "reiniciar-juego"],
-  props: {
-    initialMarkedBalls: {
-      type: Array,
-      default: () => [],
-    },
-  },
-  setup(props, { emit }) {
-    const letters = ["B", "I", "N", "G", "O"]
-    const numbersPerColumn = 15
-    const tableroData = ref([])
+const store = useAppStore()
 
-    // Generar estructura visual (Esto es estático, se queda)
-    const generateTableroData = () => {
-      const data = []
-      for (let i = 0; i < 5; i++) {
-        const column = []
-        column.push({ type: "letter", value: letters[i], id: `${letters[i]}-ggb` })
-        for (let j = 1; j <= numbersPerColumn; j++) {
-          column.push({ type: "number", value: i * numbersPerColumn + j, id: i * numbersPerColumn + j })
-        }
-        data.push(column)
-      }
-      tableroData.value = data
+// Lógica para generar el diseño (B-I-N-G-O)
+const letters = ["B", "I", "N", "G", "O"]
+const boardLayout = computed(() => {
+  const layout = []
+  for (let i = 0; i < 5; i++) {
+    const column = [{ type: "letter", value: letters[i], id: `L-${i}` }]
+    for (let j = 1; j <= 15; j++) {
+      column.push({ type: "number", value: i * 15 + j, id: i * 15 + j })
     }
+    layout.push(column)
+  }
+  return layout
+})
 
-    // Usamos las props directamente (Reactividad automática)
-    const isBalotaMarcada = (balota) => props.initialMarkedBalls.includes(String(balota))
+// Reactividad desde Pinia
+const markedBalls = computed(() => store.gameState.markedBalls)
 
-    const isLastMarked = (balota) => {
-      return props.initialMarkedBalls.length > 0 && props.initialMarkedBalls[0] === String(balota)
+const isMarked = (ball) => markedBalls.value.includes(String(ball))
+const isLastMarked = (ball) => markedBalls.value[0] === String(ball)
+
+const toggleBall = (ball) => {
+  const ballStr = String(ball)
+  let newList = [...markedBalls.value]
+
+  if (newList.includes(ballStr)) {
+    // Si es la última marcada, permitimos desmarcar
+    if (isLastMarked(ball)) {
+      newList.shift()
+      store.updateGameState({
+        markedBalls: newList,
+        counter: Math.max(0, store.gameState.counter - 1),
+      })
     }
-
-    const marcarBalotaLocal = (balota) => {
-      const balotaString = String(balota)
-      const isMarked = isBalotaMarcada(balotaString)
-      const isLast = isLastMarked(balotaString)
-
-      if (isMarked) {
-        if (isLast) {
-          // Lógica de desmarcar: calculamos el nuevo array y lo enviamos al padre
-          const newArray = props.initialMarkedBalls.slice(1) // Quitamos el primero
-          emit("desmarcar-balota", newArray)
-        }
-      } else {
-        emit("marcar-balota", balotaString)
-      }
-    }
-
-    const isClearBoardDisabled = computed(() => props.initialMarkedBalls.length === 0)
-
-    onMounted(() => {
-      generateTableroData()
-      // ¡AQUÍ BORRAMOS TODAS LAS CARGAS DE DATOS!
+  } else {
+    // Marcar nueva balota (va al inicio)
+    newList.unshift(ballStr)
+    store.updateGameState({
+      markedBalls: newList,
+      counter: store.gameState.counter + 1,
     })
+  }
+}
 
-    return {
-      tableroData,
-      marcarBalotaLocal,
-      isBalotaMarcada,
-      isLastMarked,
-      isClearBoardDisabled,
-    }
-  },
+const confirmReset = () => {
+  if (confirm("¿Seguro que deseas limpiar el tablero?")) {
+    store.updateGameState({ markedBalls: [], counter: 0 })
+  }
 }
 </script>
 
 <style scoped>
-/* Tus estilos CSS se mantienen igual */
+/* Reutilizamos tus estilos CSS originales para no dañar el aspecto visual */
+@import "../../assets/layout/_modules.css";
+/* ... tus estilos de GameBoard ... */
 #game-board {
   border-radius: 4px;
   display: grid;
@@ -218,5 +191,10 @@ export default {
 }
 #grid-game-board .group:last-child .cell:last-child .btn-ggb {
   border-bottom-right-radius: 2px;
+}
+
+.last {
+  background-color: #ffaa33 !important; /* Resalte para la última balota */
+  color: white !important;
 }
 </style>

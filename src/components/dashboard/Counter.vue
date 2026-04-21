@@ -12,16 +12,16 @@
 </template>
 
 <script setup>
-// IMPORTANTE: Ya no usamos fetch manual.
-import { useGameData } from "../../composables/useGameData"
+import { computed } from "vue"
+import { useAppStore } from "../../stores/appStore"
 
-// Nos enganchamos al estado global. El intervalo de 1000ms ya está corriendo en GameView,
-// así que este componente solo "escucha" el valor actualizado.
-const { counter } = useGameData()
+const store = useAppStore()
+// Reactividad directa al store
+const counter = computed(() => store.gameState.counter)
 </script>
 
 <style scoped>
-/* Tus estilos CSS existentes se mantienen IGUALES */
+/* Pega aquí exactamente los mismos estilos de tu Counter.vue original */
 #counter {
   padding-bottom: calc(var(--gap) * 1.5);
 }

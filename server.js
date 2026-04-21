@@ -93,7 +93,13 @@ app.use((req, res) => {
 
 // Arrancar servidor
 initDatabase().then(() => {
-  httpServer.listen(port, () => {
-    console.log(`Servidor maestro escuchando en http://0.0.0.0:${port}`)
+  // Al especificar '0.0.0.0', Node escuchará en todas las interfaces de red (Localhost y LAN)
+  httpServer.listen(port, "0.0.0.0", () => {
+    console.log(`==================================================`)
+    console.log(`🚀 SERVIDOR BINGO EN LÍNEA`)
+    console.log(`==================================================`)
+    console.log(`▶ Servidor Backend: http://localhost:${port}`)
+    console.log(`▶ Red Local (LAN):  http://<TU_IP_LOCAL>:${port}`)
+    console.log(`==================================================`)
   })
 })

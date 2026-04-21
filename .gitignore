@@ -7,22 +7,28 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Dependencias y builds
 node_modules
-.DS_Store
 dist
 dist-ssr
-coverage
 *.local
 
-# Archivos de datos
-data/db.json
-data-game-board.json
-data-game-mode.json
+# Sistema Operativo
+.DS_Store
+Thumbs.db
 
+# Base de Datos Local (¡IMPORTANTE!)
+# Ignoramos la base de datos de trabajo para no sobreescribir datos en producción
+data/db.json
+
+# (El archivo data/db-seed.json SÍ se sube al repositorio como plantilla inicial)
+
+# Pruebas
 /cypress/videos/
 /cypress/screenshots/
+coverage
 
-# Editor directories and files
+# Directorios y archivos de Editores
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -31,5 +37,4 @@ data-game-mode.json
 *.njsproj
 *.sln
 *.sw?
-
 *.tsbuildinfo

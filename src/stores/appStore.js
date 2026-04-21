@@ -2,7 +2,7 @@ import { defineStore } from "pinia"
 import { io } from "socket.io-client"
 
 // En desarrollo se conecta a Vite (proxy), en producción a sí mismo
-const SOCKET_URL = import.meta.env.DEV ? "http://localhost:3000" : "/"
+const SOCKET_URL = import.meta.env.DEV ? "http://localhost:3000" : window.location.origin
 
 export const useAppStore = defineStore("app", {
   state: () => ({

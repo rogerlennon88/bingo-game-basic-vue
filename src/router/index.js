@@ -1,7 +1,6 @@
-import { createRouter, createWebHistory } from "vue-router";
-// Importamos las nuevas vistas (las crearemos a continuación)
-import DashboardView from "../views/DashboardView.vue";
-import StageMasterView from "../views/obs/StageMasterView.vue";
+import { createRouter, createWebHistory } from "vue-router"
+import DashboardView from "../views/DashboardView.vue"
+import StageMasterView from "../views/obs/StageMasterView.vue"
 
 const router = createRouter({
   history: createWebHistory(),
@@ -16,13 +15,12 @@ const router = createRouter({
       name: "StageMaster",
       component: StageMasterView,
     },
-    // Mantendremos las vistas individuales por si las necesitas en OBS por separado
+    // Si intentan entrar a una ruta que no existe, los mandamos al Dashboard
     {
-      path: "/views/game-board",
-      name: "LegacyGameBoard",
-      component: () => import("../views/GameBoardView.vue"),
+      path: "/:pathMatch(.*)*",
+      redirect: "/",
     },
   ],
-});
+})
 
-export default router;
+export default router

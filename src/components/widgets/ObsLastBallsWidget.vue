@@ -1,5 +1,5 @@
 <template>
-  <div class="score">
+  <div class="score hardware-accelerated">
     <h3 class="score--title">Últimas Balotas</h3>
     <div class="score--body">
       <div id="last-number-mofv-view" class="ball" :class="'ball-' + getColumnLetter(lastNumber)">
@@ -46,3 +46,25 @@ const getColumnLetter = (ballNumber) => {
   return ""
 }
 </script>
+
+<style scoped>
+/* OPTIMIZACIÓN: Previene que cambios internos alteren elementos externos en OBS */
+.hardware-accelerated {
+  transform: translateZ(0);
+  contain: layout paint;
+  will-change: contents;
+}
+
+.mofv-number {
+  /* OPTIMIZACIÓN: Evita que el tamaño de la fuente cambie el ancho de la balota si el número es "1" vs "8" */
+  font-variant-numeric: tabular-nums;
+}
+
+.ball {
+  /* Transición suave para cambios de color de fondo al cambiar la clase ball-b, ball-i, etc. */
+  transition:
+    background-image 0.2s ease,
+    background-color 0.2s ease;
+  will-change: background-image;
+}
+</style>

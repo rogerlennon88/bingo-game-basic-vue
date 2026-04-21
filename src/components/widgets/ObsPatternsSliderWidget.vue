@@ -14,9 +14,14 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from "vue"
-import { useGameData } from "../composables/useGameData"
+import { useAppStore } from "../../stores/appStore"
 
-const { patternsList, sliderConfig } = useGameData(1000)
+const store = useAppStore()
+
+// Datos desde Pinia
+const patternsList = computed(() => store.config.patterns || [])
+const slideDuration = computed(() => store.config.slideDuration || 5000)
+
 const currentIndex = ref(0)
 let sliderInterval = null
 
@@ -30,7 +35,7 @@ const startSlider = () => {
   if (patternsList.value.length > 0) {
     sliderInterval = setInterval(() => {
       currentIndex.value = (currentIndex.value + 1) % patternsList.value.length
-    }, sliderConfig.value.slideDuration || 5000)
+    }, slideDuration.value)
   }
 }
 
@@ -38,27 +43,31 @@ const stopSlider = () => {
   if (sliderInterval) clearInterval(sliderInterval)
 }
 
-watch(patternsList, (newVal) => {
-  if (!sliderInterval && newVal.length > 0) startSlider()
-})
+// Reiniciar slider si cambia la lista (ej: cuando se marca uno como completado)
+watch(
+  patternsList,
+  (newVal) => {
+    if (!sliderInterval && newVal.length > 0) startSlider()
+  },
+  { deep: true },
+)
 
 onMounted(() => startSlider())
 onUnmounted(() => stopSlider())
 </script>
 
 <style scoped>
-/* Contenedor Principal: Tamaño fijo y ubicación Top-Left */
+/* Estilos originales exactos */
 #patterns-slider-view {
   position: relative;
   width: 486px;
   height: 639px;
-  background-color: #fff;
+  background-color: transparent; /* Cambiado a transparente para que se vea el fondo de OBS si quieres */
   overflow: hidden;
   margin: 0;
   padding: 0;
 }
 
-/* Wrapper de cada Slide */
 .slide-wrapper {
   position: absolute;
   top: 0;
@@ -80,25 +89,17 @@ onUnmounted(() => stopSlider())
   display: block;
 }
 
-/* Efecto Grayscale al completar */
 .image-box.is-completed .main-img {
   filter: grayscale(100%) invert(100%) opacity(32%);
 }
 
-/* --- SELLO CORREGIDO --- */
 .stamp {
   position: absolute;
   top: 50%;
   left: 50%;
-  /* Solo centrado, SIN rotación ni escala */
   transform: translate(-50%, -50%);
-
-  /* Ajusta este valor si quieres que el sello sea más grande o pequeño */
   width: 90%;
-
   z-index: 10;
-
-  /* Animación suave solo de opacidad */
   animation: stamp-fade-in 0.5s ease-out;
 }
 
@@ -110,8 +111,6 @@ onUnmounted(() => stopSlider())
     opacity: 1;
   }
 }
-
-/* --- TRANSICIÓN SLIDE (Derecha a Izquierda) --- */
 
 .slide-enter-active,
 .slide-leave-active {

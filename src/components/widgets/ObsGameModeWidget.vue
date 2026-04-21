@@ -25,22 +25,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
-import { useGameData } from "../composables/useGameData"
+import { ref, computed, onMounted } from "vue"
+import { useAppStore } from "../../stores/appStore"
 
-// Usamos el composable, pero renombramos la variable para que coincida con tu lógica
-const { gamePattern: markedPattern } = useGameData(1000)
+const store = useAppStore()
+const markedPattern = computed(() => store.gameState.gamePattern || [])
 
 const letters = ["B", "I", "N", "G", "O"]
-const rows = 5
 const gameModeData = ref([])
 
 const generateGameModeData = () => {
   const data = []
-  letters.forEach((letter, columnIndex) => {
-    const column = []
-    column.push({ type: "letter", value: letter, id: `${letter.toLowerCase()}-ggm` })
-    for (let rowIndex = 1; rowIndex <= rows; rowIndex++) {
+  letters.forEach((letter) => {
+    const column = [{ type: "letter", value: letter, id: `${letter.toLowerCase()}-ggm` }]
+    for (let rowIndex = 1; rowIndex <= 5; rowIndex++) {
       const id = `${letter.toLowerCase()}${rowIndex}`
       column.push({ type: "number", value: id, id: id, isMiddle: letter === "N" && rowIndex === 3 })
     }
@@ -49,19 +47,13 @@ const generateGameModeData = () => {
   gameModeData.value = data
 }
 
-const isPositionMarked = (positionId) => {
-  return markedPattern.value.includes(positionId)
-}
+const isPositionMarked = (positionId) => markedPattern.value.includes(positionId)
 
-onMounted(() => {
-  generateGameModeData()
-})
+onMounted(() => generateGameModeData())
 </script>
 
 <style scoped>
-/* Tus estilos existentes intactos */
-/* game-mode-view */
-
+/* Estilos originales exactos de GameModeView.vue */
 #game-mode-view.module {
   background-color: inherit;
   border: 4px solid fuchsia;
@@ -75,14 +67,12 @@ onMounted(() => {
   border-radius: 4px;
 }
 
-/* Grid Game Mode */
 #grid-game-mode-view {
   display: grid;
   gap: 12px;
   grid-template-columns: repeat(5, 1fr);
 }
 
-/* Groups and Cells */
 #grid-game-mode-view .group {
   display: grid;
   gap: 12px;
@@ -91,7 +81,6 @@ onMounted(() => {
   display: grid;
 }
 
-/* General Span */
 #grid-game-mode-view .btn-ggm {
   color: transparent;
   aspect-ratio: 1 / 1;
@@ -102,7 +91,6 @@ onMounted(() => {
   user-select: none;
 }
 
-/* Letter Span */
 #grid-game-mode-view .letter {
   background-color: transparent;
   color: transparent;
@@ -111,7 +99,6 @@ onMounted(() => {
   padding: calc(var(--gap) * 2 / 2);
 }
 
-/* Number Span */
 #grid-game-mode-view .num {
   background-color: transparent;
   color: transparent;
@@ -119,7 +106,6 @@ onMounted(() => {
   font-weight: var(--fw-bold);
 }
 
-/* Middle Span */
 #grid-game-mode-view .middle {
   background-color: rgb(211, 211, 211);
   color: transparent;
@@ -128,7 +114,6 @@ onMounted(() => {
   opacity: 0;
 }
 
-/* Letter Span Status */
 #grid-game-mode-view .letter.marked {
   background-color: rgb(138, 154, 91);
   color: transparent;
@@ -136,11 +121,9 @@ onMounted(() => {
   box-shadow: none;
 }
 
-/* Number Span Status */
 #grid-game-mode-view .num.marked {
   background: #bcbd48;
-  background-image: url("../../public/views-media/game-mode/icon--btn-marked--game-mode.png"),
-    linear-gradient(0deg, #65033e 1%, #7f0554 51%, #7f0554);
+  background-image: url("/views-media/game-mode/icon--btn-marked--game-mode.png"), linear-gradient(0deg, #65033e 1%, #7f0554 51%, #7f0554);
   background-size: contain;
   background-repeat: no-repeat;
   border: 6px solid #ffc200;
@@ -149,7 +132,6 @@ onMounted(() => {
   box-shadow: inset 0 0 32px 4px #e3004b;
 }
 
-/* Middle Span Status */
 #grid-game-mode-view .middle.marked {
   background-color: rgb(95, 158, 160);
   color: transparent;
@@ -161,7 +143,6 @@ onMounted(() => {
   display: none;
 }
 
-/* Border Radius Grid */
 #grid-game-mode-view .group:first-child .cell:first-child span {
   border-top-left-radius: 4px;
 }

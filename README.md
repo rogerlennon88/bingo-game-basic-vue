@@ -67,7 +67,7 @@ Una vez que el servidor esté activo (ejecutando npm run start), puedes acceder 
 
 | Vista / Interfaz | URL de Acceso (Ejemplo Producción) | Propósito |
 | ------------ | ------------ | ------------ |
-| Dashboard Administrativo | http://localhost:3000/ | Fila 1, Col 3 |
+| Dashboard Administrativo | http://localhost:3000/ | Panel de control interactivo para el animador/operador. |
 | Escenario OBS (Master) | http://localhost:3000/views/obs/stage | Lienzo vertical de 1920px de ancho con bandejas apiladas. Úsalo como "Navegador" en OBS y aplica el filtro "Recortar/Acolchar" (Crop). |
 
 ### 🧩 Sistema de Bandejas OBS (Vertical Stacking)

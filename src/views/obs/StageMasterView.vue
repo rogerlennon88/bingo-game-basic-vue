@@ -22,13 +22,13 @@
     </div>
 
     <div id="tray-game-mode" class="obs-tray">
-      <div class="crop">
+      <div class="crop crop-fill">
         <ObsGameModeWidget />
       </div>
     </div>
 
     <div id="tray-patterns" class="obs-tray">
-      <div class="crop">
+      <div class="crop crop-fill">
         <ObsPatternsSliderWidget />
       </div>
     </div>

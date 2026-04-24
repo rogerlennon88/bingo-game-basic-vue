@@ -1,10 +1,10 @@
 <template>
-  <div id="patterns-slider-view">
+  <div id="patterns-slider-view" class="patterns-slider-container hardware-accelerated">
     <transition name="slide-fade">
       <div v-if="currentPattern" :key="currentPattern.id" class="slide-wrapper">
         <div class="image-box" :class="{ 'is-completed': currentPattern.completed }">
           <img :src="currentPattern.image" :alt="currentPattern.name" class="main-img" />
-          <img v-if="currentPattern.completed" src="/img/patterns/stamp-completed.png" class="stamp" alt="Completed" />
+          <img v-if="currentPattern.completed" src="/img/patterns/stamp-completed.png" class="stamp" alt="Completado" />
         </div>
       </div>
     </transition>
@@ -16,7 +16,6 @@ import { ref, computed, onMounted, onUnmounted, watch } from "vue"
 import { useAppStore } from "../../stores/appStore"
 
 const store = useAppStore()
-
 const patternsList = computed(() => store.config.patterns || [])
 const slideDuration = computed(() => store.config.slideDuration || 5000)
 
@@ -28,7 +27,6 @@ const currentPattern = computed(() => {
   return patternsList.value[currentIndex.value]
 })
 
-// OPTIMIZACIÓN: Pre-carga de imágenes en memoria del navegador
 const preloadImages = (patterns) => {
   patterns.forEach((pattern) => {
     if (pattern.image) {
@@ -36,7 +34,6 @@ const preloadImages = (patterns) => {
       img.src = pattern.image
     }
   })
-  // Precargar también el sello de completado
   const stampImg = new Image()
   stampImg.src = "/img/patterns/stamp-completed.png"
 }
@@ -60,6 +57,8 @@ watch(
     if (newVal.length > 0) {
       preloadImages(newVal)
       if (!sliderInterval) startSlider()
+    } else {
+      stopSlider()
     }
   },
   { deep: true, immediate: true },
@@ -76,26 +75,38 @@ onUnmounted(() => stopSlider())
 </script>
 
 <style scoped>
-#patterns-slider-view {
+/* =========================================
+   1. CONTENEDOR PRINCIPAL FLUIDO
+   ========================================= */
+.hardware-accelerated {
+  transform: translateZ(0);
+  contain: strict; /* Optimización extrema para OBS */
+}
+
+.patterns-slider-container {
   position: relative;
-  width: 486px;
-  height: 639px;
+  width: 100%;
+  height: 100%;
+  /* Permite escalar el sello de 'Completado' en base al ancho/alto de la caja */
+  container-type: size;
   background-color: transparent;
   overflow: hidden;
   margin: 0;
   padding: 0;
-  /* OPTIMIZACIÓN: Aísla el renderizado de este contenedor */
-  contain: strict;
-  transform: translateZ(0);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
+/* =========================================
+   2. SLIDES E IMÁGENES
+   ========================================= */
 .slide-wrapper {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  /* OPTIMIZACIÓN: Prepara la GPU para animar estas propiedades */
+  inset: 0; /* Ocupa todo el contenedor (top, left, right, bottom: 0) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   will-change: transform, opacity;
 }
 
@@ -103,29 +114,41 @@ onUnmounted(() => stopSlider())
   position: relative;
   width: 100%;
   height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .main-img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  /* CRÍTICO: 'contain' asegura que el patrón nunca se recorte sin importar
+     la proporción del Crop que hagas en OBS */
+  object-fit: contain;
   display: block;
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.4)); /* Sombra para dar profundidad */
+  transition: filter 0.3s ease;
 }
 
+/* Estado completado: oscurece y vuelve gris la tarjeta base */
 .image-box.is-completed .main-img {
-  filter: grayscale(100%) invert(100%) opacity(32%);
-  transition: filter 0.3s ease; /* Transición suave al completar */
+  filter: grayscale(100%) invert(100%) opacity(32%) drop-shadow(0 15px 25px rgba(0, 0, 0, 0.4));
 }
 
+/* =========================================
+   3. SELLO DE "COMPLETADO"
+   ========================================= */
 .stamp {
   position: absolute;
+  /* Usamos unidades cqmin para que el sello escale perfectamente con la tarjeta */
+  width: 70cqmin;
+  max-width: 90%;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) translateZ(0);
-  width: 90%;
   z-index: 10;
   will-change: opacity, transform;
-  animation: stamp-fade-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Animación más natural */
+  animation: stamp-fade-in 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 @keyframes stamp-fade-in {
@@ -139,7 +162,9 @@ onUnmounted(() => stopSlider())
   }
 }
 
-/* OPTIMIZACIÓN: Transición Slide + Fade forzando la aceleración 3D */
+/* =========================================
+   4. ANIMACIÓN DEL SLIDER (ACELERADA POR GPU)
+   ========================================= */
 .slide-fade-enter-active,
 .slide-fade-leave-active {
   transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);

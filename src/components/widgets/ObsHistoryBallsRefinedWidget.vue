@@ -13,6 +13,7 @@
 <script setup>
 import { computed } from "vue"
 import { useAppStore } from "../../stores/appStore"
+import { useBingoLogic } from "../../composables/useBingoLogic"
 
 const props = defineProps({
   historyIndex: {
@@ -22,26 +23,17 @@ const props = defineProps({
 })
 
 const store = useAppStore()
+const { getColumnLetter } = useBingoLogic() // Importamos la lógica centralizada
+
 const markedBalls = computed(() => store.gameState.markedBalls)
 
-// Toma la balota basada en el índice (1, 2, 3 o 4)
+// Toma la balota basada en el índice (1, 2, 3 o 4) del historial
 const historicalNumber = computed(() => {
   if (markedBalls.value.length > props.historyIndex) {
     return markedBalls.value[props.historyIndex]
   }
   return null
 })
-
-const getColumnLetter = (ballNumber) => {
-  if (!ballNumber) return ""
-  const n = Number(ballNumber)
-  if (n >= 1 && n <= 15) return "b"
-  if (n >= 16 && n <= 30) return "i"
-  if (n >= 31 && n <= 45) return "n"
-  if (n >= 46 && n <= 60) return "g"
-  if (n >= 61 && n <= 75) return "o"
-  return ""
-}
 </script>
 
 <style scoped>

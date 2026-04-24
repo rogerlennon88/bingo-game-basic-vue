@@ -1,20 +1,20 @@
 <template>
-  <div id="game-board-refined" class="board-refined-container">
+  <div id="game-board-refined" class="board-refined-container hardware-accelerated">
     <header class="board-header">
-      <div v-for="column in tableroData" :key="'h-' + column[0].id" class="header-cell">
+      <div v-for="column in boardData" :key="'h-' + column[0].id" class="header-cell">
         <span class="letter-text">{{ column[0].value }}</span>
       </div>
     </header>
 
     <main class="board-body">
-      <div v-for="column in tableroData" :key="'c-' + column[0].id" class="body-column">
+      <div v-for="column in boardData" :key="'c-' + column[0].id" class="body-column">
         <div v-for="cell in column.slice(1)" :key="cell.id" class="num-cell">
           <span
             class="num-text"
             :class="{
-              marked: isBalotaMarcada(cell.value),
+              marked: isBallMarked(cell.value),
               'marked-animating': isAnimating(cell.value),
-              lock: isBalotaMarcada(cell.value),
+              lock: isBallMarked(cell.value),
             }"
           >
             {{ cell.value }}
@@ -26,67 +26,83 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from "vue"
+import { ref, computed, watch } from "vue"
 import { useAppStore } from "../../stores/appStore"
 
 const store = useAppStore()
 const markedBalls = computed(() => store.gameState.markedBalls)
 
-const letters = ["B", "I", "N", "G", "O"]
-const numbersPerColumn = 15
-const tableroData = ref([])
-const animatingBalls = ref([])
-const animationDuration = 2000
+// Estandarización de constantes en inglés
+const BINGO_LETTERS = ["B", "I", "N", "G", "O"]
+const NUMBERS_PER_COLUMN = 15
+const ANIMATION_DURATION = 2000
 
+// Estado para controlar qué balotas están brillando actualmente
+const animatingBalls = ref([])
+
+// 1. Optimización: Tablero Generado Declarativamente (Computed)
+// Al ser computed, se genera instantáneamente sin esperar al ciclo onMounted
+const boardData = computed(() => {
+  const data = []
+  for (let colIndex = 0; colIndex < 5; colIndex++) {
+    const letter = BINGO_LETTERS[colIndex]
+    const column = [{ type: "letter", value: letter, id: `${letter}-ggb` }]
+
+    for (let rowIndex = 1; rowIndex <= NUMBERS_PER_COLUMN; rowIndex++) {
+      const numberValue = colIndex * NUMBERS_PER_COLUMN + rowIndex
+      column.push({ type: "number", value: numberValue, id: numberValue })
+    }
+    data.push(column)
+  }
+  return data
+})
+
+// 2. Helpers limpios y en inglés
+const isBallMarked = (ball) => markedBalls.value.includes(String(ball))
+const isAnimating = (ball) => animatingBalls.value.includes(String(ball))
+
+// 3. Watcher optimizado para detectar nuevas balotas
 watch(
   markedBalls,
   (newVal, oldVal) => {
+    // Si el tablero se limpia o no hay balotas anteriores, no animamos
     if (!oldVal || oldVal.length === 0) return
-    const newBalls = newVal.filter((ball) => !oldVal.includes(ball))
-    newBalls.forEach((ball) => {
+
+    // Filtramos cuáles son las balotas recién llegadas
+    const newArrivals = newVal.filter((ball) => !oldVal.includes(ball))
+
+    newArrivals.forEach((ball) => {
       if (!animatingBalls.value.includes(ball)) {
+        // Añadimos a la lista de animación
         animatingBalls.value.push(ball)
+
+        // Removemos de la lista después del tiempo establecido
         setTimeout(() => {
           animatingBalls.value = animatingBalls.value.filter((b) => b !== ball)
-        }, animationDuration)
+        }, ANIMATION_DURATION)
       }
     })
   },
   { deep: true },
 )
-
-const generateTableroData = () => {
-  const data = []
-  for (let i = 0; i < 5; i++) {
-    const column = [{ type: "letter", value: letters[i], id: `${letters[i]}-ggb` }]
-    for (let j = 1; j <= numbersPerColumn; j++) {
-      column.push({ type: "number", value: i * numbersPerColumn + j, id: i * numbersPerColumn + j })
-    }
-    data.push(column)
-  }
-  tableroData.value = data
-}
-
-const isBalotaMarcada = (balota) => markedBalls.value.includes(String(balota))
-const isAnimating = (balota) => animatingBalls.value.includes(String(balota))
-
-onMounted(() => generateTableroData())
 </script>
 
 <style scoped>
 /* =========================================
    CONTENEDOR MAESTRO DEL TABLERO
    ========================================= */
+.hardware-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
 .board-refined-container {
-  /* height: 100%; */
   display: grid;
-  grid-template-rows: auto 1fr; /* Encabezado usa lo que necesita, Cuerpo usa el resto */
+  grid-template-rows: auto 1fr;
   gap: 8px;
-  /* background: #ce004f; */
   padding: 16px;
-  border-radius: 24px; /* Suaviza las esquinas del fondo principal */
+  border-radius: 24px;
   font-family: "Aktiv Grotesk Ex Trial XBold", Arial, sans-serif;
-  transform: translateZ(0); /* Aceleración por hardware para OBS */
 }
 
 /* =========================================
@@ -102,7 +118,6 @@ onMounted(() => generateTableroData())
 }
 
 .header-cell {
-  /* [CRÍTICO] Ruta absoluta apuntando a la carpeta public de Vite */
   background-image: url("/views-media/main-obs-fullhd/bg-btn-letter.png");
   background-position: center;
   background-repeat: no-repeat;
@@ -112,15 +127,15 @@ onMounted(() => generateTableroData())
 }
 
 .letter-text {
-  font-size: 6rem; /* Excelente uso de viewport units */
+  font-size: 6rem;
   font-weight: 900;
   color: #64043f;
   line-height: 1;
   display: grid;
   place-items: center;
-  aspect-ratio: 1 / 1; /* Garantiza proporciones cuadradas perfectas */
+  aspect-ratio: 1 / 1;
   padding: 8px;
-  width: 100%; /* Asegura que el texto interactúe con toda la celda */
+  width: 100%;
 }
 
 /* =========================================
@@ -133,12 +148,12 @@ onMounted(() => generateTableroData())
   gap: 3px;
   border: 3px solid #64043f;
   border-radius: 16px;
-  overflow: clip; /* Moderno y eficiente para bordes redondeados */
+  overflow: clip;
 }
 
 .body-column {
   display: grid;
-  grid-template-rows: repeat(15, 1fr); /* 15 celdas de igual tamaño */
+  grid-template-rows: repeat(15, 1fr);
   gap: 3px;
 }
 
@@ -149,10 +164,6 @@ onMounted(() => generateTableroData())
 }
 
 .num-text {
-  /* Usamos width y height al 100% en lugar de padding fijo para 
-     evitar que el tablero se desborde del límite de 1080px */
-  /* width: 100%; */
-  /* height: 100%; */
   padding: 10px 20px;
   font-size: 3.8rem;
   font-weight: 700;
@@ -161,14 +172,13 @@ onMounted(() => generateTableroData())
   line-height: 1;
   display: grid;
   place-items: center;
-  transition: all 0.2s ease; /* Transición suave al marcar */
+  transition: all 0.2s ease;
 }
 
 /* =========================================
    ESTADOS DINÁMICOS (Marcada y Animación)
    ========================================= */
 .num-text.marked {
-  /* [CRÍTICO] Ruta absoluta apuntando a la carpeta public */
   background-image: url("/views-media/main-obs-fullhd/bg-btn-num.png");
   background-position: center;
   background-repeat: no-repeat;
@@ -177,31 +187,13 @@ onMounted(() => generateTableroData())
   cursor: default;
 }
 
-.marked-animating {
-  animation: num-pulse 0.6s alternate infinite;
-}
-
-@keyframes num-pulse {
-  from {
-    transform: scale(1);
-    filter: brightness(1);
-  }
-  to {
-    transform: scale(1.1);
-    filter: brightness(1.2);
-  }
-}
-
 .num-text.marked-animating {
-  /* Mantenemos tu imagen de fondo intacta durante la animación */
-  background-image: url(/views-media/main-obs-fullhd/bg-btn-num.png);
+  background-image: url("/views-media/main-obs-fullhd/bg-btn-num.png");
   background-position: center;
   background-repeat: no-repeat;
   background-size: 72%;
   background-color: #e97451;
   color: #fff;
-
-  /* Agregamos el destello/parpadeo que funciona sobre tu arte */
   animation: obs-ball-pop 0.5s alternate infinite ease-in-out;
 }
 
@@ -214,7 +206,6 @@ onMounted(() => generateTableroData())
     background-color: rgb(255, 213, 128);
     color: rgb(192, 64, 0);
     box-shadow: inset 0 0 16px 1px rgb(255, 95, 31);
-
     filter: brightness(1.3) drop-shadow(0 0 8px rgba(255, 255, 255, 0.5));
     transform: scale(1.05);
   }

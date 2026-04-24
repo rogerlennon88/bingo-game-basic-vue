@@ -1,24 +1,27 @@
 <template>
   <div id="patterns-slider-view" class="patterns-slider-container hardware-accelerated">
-    <transition name="slide-fade">
+    <Transition name="slide-fade" mode="out-in">
       <div v-if="currentPattern" :key="currentPattern.id" class="slide-wrapper">
         <div class="image-box" :class="{ 'is-completed': currentPattern.completed }">
           <img :src="currentPattern.image" :alt="currentPattern.name" class="main-img" />
           <img v-if="currentPattern.completed" src="/img/patterns/stamp-completed.png" class="stamp" alt="Completado" />
         </div>
       </div>
-    </transition>
+    </Transition>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from "vue"
+import { ref, computed, onUnmounted, watch } from "vue"
 import { useAppStore } from "../../stores/appStore"
 
 const store = useAppStore()
+
+// 1. Estados Globales (Computed)
 const patternsList = computed(() => store.config.patterns || [])
 const slideDuration = computed(() => store.config.slideDuration || 5000)
 
+// 2. Estados Locales
 const currentIndex = ref(0)
 let sliderInterval = null
 
@@ -27,6 +30,7 @@ const currentPattern = computed(() => {
   return patternsList.value[currentIndex.value]
 })
 
+// 3. Sistema de Pre-carga
 const preloadImages = (patterns) => {
   patterns.forEach((pattern) => {
     if (pattern.image) {
@@ -38,40 +42,43 @@ const preloadImages = (patterns) => {
   stampImg.src = "/img/patterns/stamp-completed.png"
 }
 
+// 4. Controladores del Slider
+const stopSlider = () => {
+  if (sliderInterval) {
+    clearInterval(sliderInterval)
+    sliderInterval = null
+  }
+}
+
 const startSlider = () => {
-  stopSlider()
-  if (patternsList.value.length > 0) {
+  stopSlider() // Asegurar que no hay intervalos huérfanos
+
+  // Solo iniciar la rotación si hay más de 1 patrón
+  if (patternsList.value.length > 1) {
     sliderInterval = setInterval(() => {
       currentIndex.value = (currentIndex.value + 1) % patternsList.value.length
     }, slideDuration.value)
   }
 }
 
-const stopSlider = () => {
-  if (sliderInterval) clearInterval(sliderInterval)
-}
-
+// 5. Ciclo de Vida y Reactividad
 watch(
   patternsList,
   (newVal) => {
     if (newVal.length > 0) {
       preloadImages(newVal)
-      if (!sliderInterval) startSlider()
+      startSlider()
     } else {
       stopSlider()
+      currentIndex.value = 0
     }
   },
-  { deep: true, immediate: true },
+  { deep: true, immediate: true }, // immediate: true reemplaza la necesidad del onMounted
 )
 
-onMounted(() => {
-  if (patternsList.value.length > 0) {
-    preloadImages(patternsList.value)
-    startSlider()
-  }
+onUnmounted(() => {
+  stopSlider()
 })
-
-onUnmounted(() => stopSlider())
 </script>
 
 <style scoped>
@@ -103,7 +110,7 @@ onUnmounted(() => stopSlider())
    ========================================= */
 .slide-wrapper {
   position: absolute;
-  inset: 0; /* Ocupa todo el contenedor (top, left, right, bottom: 0) */
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -122,11 +129,9 @@ onUnmounted(() => stopSlider())
 .main-img {
   width: 100%;
   height: 100%;
-  /* CRÍTICO: 'contain' asegura que el patrón nunca se recorte sin importar
-     la proporción del Crop que hagas en OBS */
   object-fit: contain;
   display: block;
-  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.4)); /* Sombra para dar profundidad */
+  filter: drop-shadow(0 15px 25px rgba(0, 0, 0, 0.4));
   transition: filter 0.3s ease;
 }
 
@@ -140,7 +145,6 @@ onUnmounted(() => stopSlider())
    ========================================= */
 .stamp {
   position: absolute;
-  /* Usamos unidades cqmin para que el sello escale perfectamente con la tarjeta */
   width: 70cqmin;
   max-width: 90%;
   top: 50%;

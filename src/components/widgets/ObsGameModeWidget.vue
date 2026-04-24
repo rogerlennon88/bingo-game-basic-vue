@@ -21,31 +21,44 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue"
+import { computed } from "vue"
 import { useAppStore } from "../../stores/appStore"
 
 const store = useAppStore()
 const markedPattern = computed(() => store.gameState.gamePattern || [])
 
-const letters = ["B", "I", "N", "G", "O"]
-const gameModeData = ref([])
+// 1. Estandarización de constantes
+const BINGO_LETTERS = ["B", "I", "N", "G", "O"]
+const ROWS_PER_COLUMN = 5
 
-const generateGameModeData = () => {
+// 2. Optimización: Generación de la Matriz 5x5 como Computed Estático
+// Al no depender de estados reactivos, se evalúa una vez y se cachea
+const gameModeData = computed(() => {
   const data = []
-  letters.forEach((letter) => {
-    const column = [{ type: "letter", value: letter, id: `${letter.toLowerCase()}-ggm` }]
-    for (let rowIndex = 1; rowIndex <= 5; rowIndex++) {
-      const id = `${letter.toLowerCase()}${rowIndex}`
-      column.push({ type: "number", value: id, id: id, isMiddle: letter === "N" && rowIndex === 3 })
+
+  BINGO_LETTERS.forEach((letter) => {
+    const letterLower = letter.toLowerCase()
+    const column = [{ type: "letter", value: letter, id: `${letterLower}-ggm` }]
+
+    for (let rowIndex = 1; rowIndex <= ROWS_PER_COLUMN; rowIndex++) {
+      const id = `${letterLower}${rowIndex}`
+      const isCenterFreeSpace = letter === "N" && rowIndex === 3
+
+      column.push({
+        type: "number",
+        value: id,
+        id: id,
+        isMiddle: isCenterFreeSpace,
+      })
     }
     data.push(column)
   })
-  gameModeData.value = data
-}
 
+  return data
+})
+
+// 3. Helper de validación
 const isPositionMarked = (positionId) => markedPattern.value.includes(positionId)
-
-onMounted(() => generateGameModeData())
 </script>
 
 <style scoped>
@@ -72,14 +85,14 @@ onMounted(() => generateGameModeData())
    2. GRID GEOMÉTRICO (CARTÓN 5x5)
    ========================================= */
 .grid-game-mode {
-  /* Ocupa el 90% del contenedor y mantiene proporción perfectamente cuadrada */
+  /* Ocupa el 100% de su contenedor menor y mantiene proporción perfectamente cuadrada */
   height: 100cqmin;
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 1.6cqmin; /* Separación fluida entre columnas */
-  padding: 8px;
+  padding: 8px; /* Padding de aire interno */
   background-color: rgba(229, 228, 226, 0.2); /* Fondo base muy sutil */
-  border: 1px solid fuchsia; /* Tu borde original de diagnóstico/diseño */
+  border: 1px solid fuchsia; /* Borde original de diagnóstico/diseño */
 }
 
 .group {
@@ -106,7 +119,7 @@ onMounted(() => generateGameModeData())
   height: 100%;
   aspect-ratio: 1 / 1;
   border: none;
-  border-radius: 16px; /* Cambiado a 50% para que sean círculos perfectos */
+  border-radius: 16px;
   display: grid;
   place-items: center;
   user-select: none;
@@ -139,7 +152,7 @@ onMounted(() => generateGameModeData())
 
 .btn-ggm.middle.marked {
   background-color: rgb(95, 158, 160);
-  background-image: none; /* Quitamos la estrella/ficha si el centro es distinto, o puedes mantenerla */
+  background-image: none; /* Quitamos la estrella/ficha si el centro es distinto */
   border: none;
   box-shadow: none;
 }

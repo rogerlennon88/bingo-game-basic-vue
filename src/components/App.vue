@@ -33,7 +33,7 @@
 import { ref, computed } from "vue"
 import { useRoute } from "vue-router"
 
-// --- LÓGICA DE INTERFAZ (Pantalla Completa) ---
+const route = useRoute()
 const isFullscreen = ref(false)
 
 const toggleFullscreen = () => {
@@ -48,15 +48,14 @@ const toggleFullscreen = () => {
   }
 }
 
-// --- RUTAS Y ESTILOS ---
-const route = useRoute()
+// Determinamos si es una ruta de OBS
+const isObsRoute = computed(() => route.path.startsWith("/views/obs/"))
 
 const appClass = computed(() => {
-  return route.path === "/" ? "home" : "view"
+  if (route.path === "/") return "home"
+  if (isObsRoute.value) return "obs-view"
+  return "standard-view"
 })
-
-// ¡YA NO HAY LÓGICA DE JUEGO AQUÍ!
-// Todo eso se mudó a src/views/GameView.vue y src/composables/useGameData.js
 </script>
 
 <style scoped>
@@ -64,15 +63,26 @@ const appClass = computed(() => {
   width: 100vw;
   height: 100vh;
   display: grid;
+  background: transparent;
 }
+
 #container-app.home {
   grid-template-rows: auto 1fr;
 }
-#container-app.view {
-  /* background-color: bisque; */
+
+/* Solo aplica para el lienzo de OBS */
+#container-app.obs-view {
   width: 1920px;
-  height: 1080px;
+  height: auto; /* Alto infinito para stacking vertical */
+  padding: 0;
+  margin: 0;
+  place-items: start;
+  overflow-x: hidden;
+}
+
+/* Para otras vistas futuras que no sean OBS ni Dashboard */
+#container-app.standard-view {
   padding: calc(var(--gap) * 2);
-  place-items: baseline;
+  place-items: center;
 }
 </style>

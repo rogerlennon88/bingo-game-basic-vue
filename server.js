@@ -14,67 +14,71 @@ const app = express()
 const httpServer = createServer(app)
 const port = 3000
 
-// Configuración de Socket.io
 const io = new Server(httpServer, {
   cors: {
-    origin: "*", // Permite conexiones desde cualquier dispositivo en la red local
+    origin: "*",
     methods: ["GET", "POST"],
   },
 })
 
 app.use(cors())
 app.use(express.json())
-app.use(express.static(path.join(__dirname, "dist")))
 
-// --- CONFIGURACIÓN DE BASE DE DATOS (LOWDB) ---
+// --- AJUSTE RECOMENDADO: MANEJO DE ARCHIVOS ESTÁTICOS ---
+const distPath = path.join(__dirname, "dist")
+
+// Servir archivos estáticos si la carpeta 'dist' existe (Modo Producción)
+app.use(express.static(distPath))
+
 let db
 
+/**
+ * Initializes the database by checking for existence and seeding if necessary.
+ */
 async function initDatabase() {
-  const dataDir = path.join(__dirname, "data")
-  const dbPath = path.join(dataDir, "db.json")
-  const seedPath = path.join(dataDir, "db-seed.json")
+  const dataDirectory = path.join(__dirname, "data")
+  const dbPath = path.join(dataDirectory, "db.json")
+  const seedPath = path.join(dataDirectory, "db-seed.json")
 
-  // Crear carpeta data si no existe
   try {
-    await fs.mkdir(dataDir, { recursive: true })
-  } catch (err) {}
+    await fs.mkdir(dataDirectory, { recursive: true })
+  } catch (err) {
+    // Directory already exists
+  }
 
-  // Revisar si existe db.json, si no, copiar desde el seed
   try {
     await fs.access(dbPath)
   } catch (error) {
-    console.log("Creando nueva base de datos desde la semilla...")
+    console.log("⚠️ Base de datos no encontrada. Creando desde semilla...")
     try {
       const seedData = await fs.readFile(seedPath, "utf-8")
       await fs.writeFile(dbPath, seedData, "utf-8")
     } catch (seedError) {
-      console.error("Error al leer db-seed.json. Asegúrate de que exista.", seedError)
+      console.error("❌ Error crítico: No se encontró db-seed.json.", seedError)
       process.exit(1)
     }
   }
 
-  // Inicializar Lowdb
   const defaultData = { config: {}, gameState: {} }
   db = await JSONFilePreset(dbPath, defaultData)
-  console.log("Base de datos cargada correctamente.")
+  console.log("✅ Base de datos cargada correctamente.")
 }
 
-// --- SOCKET.IO LÓGICA ---
+// --- LÓGICA DE WEBSOCKETS ---
 io.on("connection", (socket) => {
-  console.log(`Usuario conectado: ${socket.id}`)
+  console.log(`📡 Nuevo cliente conectado: ${socket.id}`)
 
-  // Enviar el estado actual al cliente apenas se conecta
+  // Enviar estado inicial al conectar
   socket.emit("initialState", db.data)
 
-  // Escuchar actualizaciones del estado del juego
+  // Escuchar actualizaciones del estado de juego
   socket.on("updateGameState", async (newGameState) => {
     db.data.gameState = { ...db.data.gameState, ...newGameState }
     await db.write()
-    // Emitir a TODOS los clientes (incluyendo al que envió el evento)
     io.emit("stateUpdated", db.data)
   })
 
-  // Escuchar actualizaciones de configuración (ej: completar patrones)
+  // Escuchar actualizaciones de configuración
   socket.on("updateConfig", async (newConfig) => {
     db.data.config = { ...db.data.config, ...newConfig }
     await db.write()
@@ -82,24 +86,43 @@ io.on("connection", (socket) => {
   })
 
   socket.on("disconnect", () => {
-    console.log(`Usuario desconectado: ${socket.id}`)
+    console.log(`🔌 Cliente desconectado: ${socket.id}`)
   })
 })
 
-// Final Catch-All (SPA)
-app.use((req, res) => {
-  res.sendFile(path.join(__dirname, "dist", "index.html"))
+// --- FALLBACK PARA SINGLE PAGE APPLICATION (SPA) ---
+app.get("*", (req, res, next) => {
+  // Si la petición es para Socket.io o API, ignorar el fallback
+  if (req.path.startsWith("/socket.io") || req.path.startsWith("/api")) {
+    return next()
+  }
+
+  const indexPath = path.join(distPath, "index.html")
+
+  res.sendFile(indexPath, (err) => {
+    if (err) {
+      // En desarrollo (sin carpeta dist), mostramos un mensaje informativo amigable
+      res.status(404).send(`
+        <h1>Entorno de Desarrollo Bingo</h1>
+        <p>El servidor de datos (Puerto 3000) está activo.</p>
+        <p>Para ver la interfaz con cambios en tiempo real, accede a: 
+           <a href="http://localhost:5173">http://localhost:5173</a>
+        </p>
+      `)
+    }
+  })
 })
 
-// Arrancar servidor
+// --- ARRANQUE DEL SERVIDOR ---
 initDatabase().then(() => {
-  // Al especificar '0.0.0.0', Node escuchará en todas las interfaces de red (Localhost y LAN)
   httpServer.listen(port, "0.0.0.0", () => {
     console.log(`==================================================`)
-    console.log(`🚀 SERVIDOR BINGO EN LÍNEA`)
+    console.log(`🚀 SERVIDOR BINGO ACTIVO`)
     console.log(`==================================================`)
-    console.log(`▶ Servidor Backend: http://localhost:${port}`)
-    console.log(`▶ Red Local (LAN):  http://<TU_IP_LOCAL>:${port}`)
+    console.log(`▶ Backend & Sockets: http://localhost:${port}`)
+    console.log(`▶ Frontend (Producción): http://localhost:${port}`)
+    console.log(`▶ Frontend (Desarrollo): http://localhost:5173`)
     console.log(`==================================================`)
+    console.log(`Instrucción: Para desarrollo con HMR usa el puerto 5173.`)
   })
 })

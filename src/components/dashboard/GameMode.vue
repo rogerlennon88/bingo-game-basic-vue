@@ -32,8 +32,9 @@
             class="btn btn-primary"
             type="button"
             title="Limpiar Patrón de Juego"
-            @click="clearPattern"
+            @click="requestAction('clear')"
             :class="{ lock: !hasSelectedPattern, disabled: !hasSelectedPattern }"
+            :disabled="!hasSelectedPattern"
           >
             <span class="btn-text">Limpiar Patrón</span>
           </button>
@@ -44,20 +45,32 @@
             class="btn btn-primary"
             type="button"
             title="Llenar Patrón de Juego Completo"
-            @click="fillPattern"
+            @click="requestAction('fill')"
             :class="{ lock: isPatternFull, disabled: isPatternFull }"
+            :disabled="isPatternFull"
           >
             <span class="btn-text">Llenar Patrón</span>
           </button>
         </li>
       </ul>
     </div>
+
+    <Teleport to="body">
+      <ConfirmationModal
+        :isOpen="modalConfig.isOpen"
+        :title="modalConfig.title"
+        :message="modalConfig.message"
+        @confirm="executeAction"
+        @cancel="modalConfig.isOpen = false"
+      />
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import { useAppStore } from "../../stores/appStore"
+import ConfirmationModal from "../ConfirmationModal.vue" // Aseguramos la importación
 
 const FULL_PATTERN = [
   "b1",
@@ -87,6 +100,42 @@ const FULL_PATTERN = [
 ]
 
 const store = useAppStore()
+
+// --- ESTADO Y LÓGICA DEL MODAL DINÁMICO ---
+const modalConfig = ref({
+  isOpen: false,
+  title: "",
+  message: "",
+  actionType: null, // 'clear' o 'fill'
+})
+
+const requestAction = (type) => {
+  if (type === "clear") {
+    modalConfig.value = {
+      isOpen: true,
+      title: "Limpiar Patrón",
+      message: "¿Seguro que deseas borrar el patrón actual? Se limpiarán todas las casillas.",
+      actionType: "clear",
+    }
+  } else if (type === "fill") {
+    modalConfig.value = {
+      isOpen: true,
+      title: "Llenar Patrón",
+      message: "¿Seguro que deseas seleccionar todas las casillas para un patrón de cartón lleno?",
+      actionType: "fill",
+    }
+  }
+}
+
+const executeAction = () => {
+  if (modalConfig.value.actionType === "clear") {
+    store.updateGameState({ gamePattern: [] })
+  } else if (modalConfig.value.actionType === "fill") {
+    store.updateGameState({ gamePattern: [...FULL_PATTERN] })
+  }
+  modalConfig.value.isOpen = false
+}
+// ------------------------------------------
 
 // Generador de la cuadrícula estática
 const letters = ["B", "I", "N", "G", "O"]
@@ -121,21 +170,12 @@ const togglePosition = (positionId) => {
 
   store.updateGameState({ gamePattern: newPattern })
 }
-
-const clearPattern = () => {
-  if (confirm("¿Limpiar Patrón? Se borrará el patrón actual.")) {
-    store.updateGameState({ gamePattern: [] })
-  }
-}
-
-const fillPattern = () => {
-  if (confirm("¿Llenar Patrón? Se seleccionarán todas las casillas.")) {
-    store.updateGameState({ gamePattern: [...FULL_PATTERN] })
-  }
-}
 </script>
 
 <style scoped>
+/* =========================================
+   ESTILOS ORIGINALES INTACTOS 
+   ========================================= */
 #game-mode {
   grid-template-rows: auto 1fr auto;
   place-items: inherit;
@@ -238,5 +278,12 @@ const fillPattern = () => {
   gap: var(--gap, 8px);
   grid-auto-flow: column;
   justify-content: center;
+}
+
+/* Modificadores extra (Disabled State) */
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(50%);
 }
 </style>

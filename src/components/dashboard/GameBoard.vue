@@ -25,16 +25,30 @@
     </div>
 
     <div class="module-controls">
-      <button class="btn btn-primary" @click="confirmReset">Limpiar Tablero</button>
+      <button class="btn btn-primary" @click="requestReset" :disabled="markedBalls.length === 0">Limpiar Tablero</button>
     </div>
+
+    <Teleport to="body">
+      <ConfirmationModal
+        :isOpen="isConfirmModalOpen"
+        title="Limpiar Tablero"
+        message="¿Estás completamente seguro de que deseas limpiar todo el tablero? Esta acción no se puede deshacer."
+        @confirm="executeReset"
+        @cancel="isConfirmModalOpen = false"
+      />
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { computed } from "vue"
+import { ref, computed } from "vue"
 import { useAppStore } from "../../stores/appStore"
+import ConfirmationModal from "../ConfirmationModal.vue" // Asegúrate de que la ruta sea correcta
 
 const store = useAppStore()
+
+// Estado del Modal
+const isConfirmModalOpen = ref(false)
 
 // Lógica para generar el diseño (B-I-N-G-O)
 const letters = ["B", "I", "N", "G", "O"]
@@ -50,7 +64,6 @@ const boardLayout = computed(() => {
   return layout
 })
 
-// Reactividad desde Pinia
 const markedBalls = computed(() => store.gameState.markedBalls)
 
 const isMarked = (ball) => markedBalls.value.includes(String(ball))
@@ -61,7 +74,6 @@ const toggleBall = (ball) => {
   let newList = [...markedBalls.value]
 
   if (newList.includes(ballStr)) {
-    // Si es la última marcada, permitimos desmarcar
     if (isLastMarked(ball)) {
       newList.shift()
       store.updateGameState({
@@ -70,7 +82,6 @@ const toggleBall = (ball) => {
       })
     }
   } else {
-    // Marcar nueva balota (va al inicio)
     newList.unshift(ballStr)
     store.updateGameState({
       markedBalls: newList,
@@ -79,10 +90,14 @@ const toggleBall = (ball) => {
   }
 }
 
-const confirmReset = () => {
-  if (confirm("¿Seguro que deseas limpiar el tablero?")) {
-    store.updateGameState({ markedBalls: [], counter: 0 })
-  }
+// Funciones del Modal
+const requestReset = () => {
+  isConfirmModalOpen.value = true
+}
+
+const executeReset = () => {
+  store.updateGameState({ markedBalls: [], counter: 0 })
+  isConfirmModalOpen.value = false
 }
 </script>
 
@@ -196,5 +211,11 @@ const confirmReset = () => {
 .last {
   background-color: #ffaa33 !important; /* Resalte para la última balota */
   color: white !important;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: grayscale(50%);
 }
 </style>

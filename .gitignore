@@ -38,3 +38,9 @@ coverage
 *.sln
 *.sw?
 *.tsbuildinfo
+
+# Repomix (AI Context Tool)
+repomix-output.txt
+repomix-output.xml
+repomix-output.md
+repomix.config.json

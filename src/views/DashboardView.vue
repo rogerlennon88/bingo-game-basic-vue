@@ -6,8 +6,7 @@
 
     <section class="block block-history">
       <div class="stack">
-        <LastNumber />
-        <LastNumberList />
+        <BallHistory />
         <Counter />
       </div>
     </section>
@@ -48,8 +47,7 @@ import { useAppStore } from "../stores/appStore"
 
 // Importación de nuestros nuevos widgets/paneles interactivos
 import GameBoard from "../components/dashboard/GameBoard.vue"
-import LastNumber from "../components/dashboard/LastNumber.vue"
-import LastNumberList from "../components/dashboard/LastNumberList.vue"
+import BallHistory from "../components/dashboard/BallHistory.vue" // <--- NUEVA IMPORTACIÓN
 import Counter from "../components/dashboard/Counter.vue"
 import GameControls from "../components/dashboard/GameControls.vue"
 import PatternsControl from "../components/dashboard/PatternsControl.vue"

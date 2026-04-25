@@ -1,6 +1,7 @@
 <template>
   <div id="game-mode" class="module">
     <h2 class="title-2">Modo de Juego</h2>
+
     <div class="layout-mode">
       <div id="grid-game-mode" class="grid-game-mode">
         <div v-for="(column, columnIndex) in gameModeData" :key="columnIndex" class="group">
@@ -13,9 +14,9 @@
                 num: cell.type === 'number' && !cell.isMiddle,
                 middle: cell.isMiddle,
                 lock: cell.type === 'letter' || cell.isMiddle,
-                marked: isMarked(cell.id),
+                marked: store.isPatternPositionMarked(cell.id),
               }"
-              @click="cell.type === 'number' && !cell.isMiddle && togglePosition(cell.id)"
+              @click="cell.type === 'number' && !cell.isMiddle && store.togglePatternPosition(cell.id)"
             >
               {{ cell.value }}
             </button>
@@ -70,8 +71,13 @@
 <script setup>
 import { computed, ref } from "vue"
 import { useAppStore } from "../../stores/appStore"
-import ConfirmationModal from "../ConfirmationModal.vue" // Aseguramos la importación
+import ConfirmationModal from "../ConfirmationModal.vue"
 
+const store = useAppStore()
+
+// --- CONSTANTES ---
+const BINGO_LETTERS = ["B", "I", "N", "G", "O"]
+const ROWS_PER_COLUMN = 5
 const FULL_PATTERN = [
   "b1",
   "b2",
@@ -98,8 +104,6 @@ const FULL_PATTERN = [
   "o4",
   "o5",
 ]
-
-const store = useAppStore()
 
 // --- ESTADO Y LÓGICA DEL MODAL DINÁMICO ---
 const modalConfig = ref({
@@ -135,41 +139,31 @@ const executeAction = () => {
   }
   modalConfig.value.isOpen = false
 }
-// ------------------------------------------
 
-// Generador de la cuadrícula estática
-const letters = ["B", "I", "N", "G", "O"]
+// --- GENERADOR DEL TABLERO OPTIMIZADO ---
 const gameModeData = computed(() => {
   const data = []
-  letters.forEach((letter) => {
-    const column = [{ type: "letter", value: letter, id: `${letter.toLowerCase()}-ggm` }]
-    for (let rowIndex = 1; rowIndex <= 5; rowIndex++) {
-      const id = `${letter.toLowerCase()}${rowIndex}`
-      column.push({ type: "number", value: id, id: id, isMiddle: letter === "N" && rowIndex === 3 })
+  BINGO_LETTERS.forEach((letter) => {
+    const letterLower = letter.toLowerCase()
+    const column = [{ type: "letter", value: letter, id: `${letterLower}-ggm` }]
+
+    for (let rowIndex = 1; rowIndex <= ROWS_PER_COLUMN; rowIndex++) {
+      const id = `${letterLower}${rowIndex}`
+      column.push({
+        type: "number",
+        value: id,
+        id: id,
+        isMiddle: letter === "N" && rowIndex === 3,
+      })
     }
     data.push(column)
   })
   return data
 })
 
-const currentPattern = computed(() => store.gameState.gamePattern || [])
-
-const isMarked = (id) => currentPattern.value.includes(id)
-const hasSelectedPattern = computed(() => currentPattern.value.length > 0)
-const isPatternFull = computed(() => currentPattern.value.length === FULL_PATTERN.length)
-
-const togglePosition = (positionId) => {
-  let newPattern = [...currentPattern.value]
-  const index = newPattern.indexOf(positionId)
-
-  if (index === -1) {
-    newPattern.unshift(positionId)
-  } else {
-    newPattern.splice(index, 1)
-  }
-
-  store.updateGameState({ gamePattern: newPattern })
-}
+// --- ESTADOS REACTIVOS DE UI ---
+const hasSelectedPattern = computed(() => store.gameState.gamePattern.length > 0)
+const isPatternFull = computed(() => store.gameState.gamePattern.length === FULL_PATTERN.length)
 </script>
 
 <style scoped>

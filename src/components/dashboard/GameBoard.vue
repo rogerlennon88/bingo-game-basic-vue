@@ -12,10 +12,10 @@
               v-else
               class="btn-ggb num"
               :class="{
-                marked: isMarked(cell.value),
-                last: isLastMarked(cell.value),
+                marked: store.isBallMarked(cell.value),
+                last: store.isLastMarked(cell.value),
               }"
-              @click="toggleBall(cell.value)"
+              @click="store.toggleBall(cell.value)"
             >
               {{ cell.value }}
             </button>
@@ -43,68 +43,46 @@
 <script setup>
 import { ref, computed } from "vue"
 import { useAppStore } from "../../stores/appStore"
-import ConfirmationModal from "../ConfirmationModal.vue" // Asegúrate de que la ruta sea correcta
+import ConfirmationModal from "../ConfirmationModal.vue"
 
 const store = useAppStore()
-
-// Estado del Modal
 const isConfirmModalOpen = ref(false)
 
-// Lógica para generar el diseño (B-I-N-G-O)
-const letters = ["B", "I", "N", "G", "O"]
+const markedBalls = computed(() => store.gameState.markedBalls)
+
+// Generación declarativa del layout del tablero (B-I-N-G-O, 1-75)
+const BINGO_LETTERS = ["B", "I", "N", "G", "O"]
+const NUMBERS_PER_COLUMN = 15
+
 const boardLayout = computed(() => {
   const layout = []
-  for (let i = 0; i < 5; i++) {
-    const column = [{ type: "letter", value: letters[i], id: `L-${i}` }]
-    for (let j = 1; j <= 15; j++) {
-      column.push({ type: "number", value: i * 15 + j, id: i * 15 + j })
+  for (let colIndex = 0; colIndex < 5; colIndex++) {
+    const letter = BINGO_LETTERS[colIndex]
+    const column = [{ type: "letter", value: letter, id: `L-${colIndex}` }]
+
+    for (let rowIndex = 1; rowIndex <= NUMBERS_PER_COLUMN; rowIndex++) {
+      const numberValue = colIndex * NUMBERS_PER_COLUMN + rowIndex
+      column.push({ type: "number", value: numberValue, id: numberValue })
     }
     layout.push(column)
   }
   return layout
 })
 
-const markedBalls = computed(() => store.gameState.markedBalls)
-
-const isMarked = (ball) => markedBalls.value.includes(String(ball))
-const isLastMarked = (ball) => markedBalls.value[0] === String(ball)
-
-const toggleBall = (ball) => {
-  const ballStr = String(ball)
-  let newList = [...markedBalls.value]
-
-  if (newList.includes(ballStr)) {
-    if (isLastMarked(ball)) {
-      newList.shift()
-      store.updateGameState({
-        markedBalls: newList,
-        counter: Math.max(0, store.gameState.counter - 1),
-      })
-    }
-  } else {
-    newList.unshift(ballStr)
-    store.updateGameState({
-      markedBalls: newList,
-      counter: store.gameState.counter + 1,
-    })
-  }
-}
-
-// Funciones del Modal
+// Funciones del Modal delegando la limpieza al Store
 const requestReset = () => {
   isConfirmModalOpen.value = true
 }
 
 const executeReset = () => {
-  store.updateGameState({ markedBalls: [], counter: 0 })
+  store.resetBoard() // <-- Lógica movida al store
   isConfirmModalOpen.value = false
 }
 </script>
 
 <style scoped>
-/* Reutilizamos tus estilos CSS originales para no dañar el aspecto visual */
 @import "../../assets/layout/_modules.css";
-/* ... tus estilos de GameBoard ... */
+
 #game-board {
   border-radius: 4px;
   display: grid;
@@ -209,7 +187,7 @@ const executeReset = () => {
 }
 
 .last {
-  background-color: #ffaa33 !important; /* Resalte para la última balota */
+  background-color: #ffaa33 !important;
   color: white !important;
 }
 

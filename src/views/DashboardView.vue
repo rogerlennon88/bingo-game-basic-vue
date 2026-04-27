@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-wrapper">
     <section class="block block-board">
-      <GameBoard />
+      <BingoBoard />
     </section>
 
     <section class="block block-history">
@@ -13,7 +13,7 @@
 
     <section class="block block-controls">
       <GameControls @abrir-revision="openModal" />
-      <PatternsControl />
+      <PatternManager />
     </section>
 
     <transition name="modal-anim">
@@ -26,7 +26,7 @@
             </button>
           </header>
           <div class="modal-body">
-            <GameMode />
+            <PatternChecker />
           </div>
         </div>
       </div>
@@ -45,25 +45,23 @@
 import { ref, computed, onMounted } from "vue"
 import { useAppStore } from "../stores/appStore"
 
-// Importación de nuestros nuevos widgets/paneles interactivos
-import GameBoard from "../components/dashboard/GameBoard.vue"
-import BallHistory from "../components/dashboard/BallHistory.vue" // <--- NUEVA IMPORTACIÓN
-import Counter from "../components/dashboard/Counter.vue"
-import GameControls from "../components/dashboard/GameControls.vue"
-import PatternsControl from "../components/dashboard/PatternsControl.vue"
-import GameMode from "../components/dashboard/GameMode.vue"
+// Nuevas importaciones estandarizadas desde la carpeta 'admin'
+import BingoBoard from "../components/admin/BingoBoard.vue"
+import BallHistory from "../components/admin/BallHistory.vue"
+import Counter from "../components/admin/Counter.vue"
+import GameControls from "../components/admin/GameControls.vue"
+import PatternManager from "../components/admin/PatternManager.vue"
+import PatternChecker from "../components/admin/PatternChecker.vue"
 
 const store = useAppStore()
-
-// Estado de conexión para el Badge
 const isConnected = computed(() => store.isConnected)
 
-// Control del Modal
+// Control del Modal de Revisión
 const isModalOpen = ref(false)
 
 const openModal = () => {
   isModalOpen.value = true
-  document.body.style.overflow = "hidden"
+  document.body.style.overflow = "hidden" // Previene scroll de fondo
 }
 
 const closeModal = () => {
@@ -80,9 +78,9 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Estructura Grid basada en tu _game.css original
-  Adaptado para funcionar dentro del <router-view> sin romper App.vue 
-*/
+/* =========================================
+   ESTILOS DEL DASHBOARD MAESTRO
+   ========================================= */
 .dashboard-wrapper {
   display: grid;
   grid-template-rows: auto 1fr;
@@ -113,7 +111,9 @@ onMounted(() => {
   gap: var(--gap);
 }
 
-/* Estilos del Modal (Mantenidos de tu original) */
+/* =========================================
+   ESTILOS DEL MODAL
+   ========================================= */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -127,6 +127,7 @@ onMounted(() => {
   place-items: center;
   padding: 20px;
 }
+
 .modal-content {
   background-color: #ffffff;
   border-radius: 24px;
@@ -139,6 +140,7 @@ onMounted(() => {
   overflow: hidden;
   position: relative;
 }
+
 .modal-header {
   background-color: #f8fafc;
   padding: 20px 24px;
@@ -147,6 +149,7 @@ onMounted(() => {
   align-items: center;
   border-bottom: 1px solid #e2e8f0;
 }
+
 .modal-header h3 {
   margin: 0;
   color: #1e293b;
@@ -155,6 +158,7 @@ onMounted(() => {
   font-weight: 700;
   letter-spacing: -0.5px;
 }
+
 .btn-close {
   background: #eff6ff;
   border: none;
@@ -167,30 +171,19 @@ onMounted(() => {
   place-items: center;
   transition: all 0.2s ease;
 }
+
 .btn-close:hover {
   background-color: #3b82f6;
   color: white;
   transform: rotate(90deg);
 }
+
 .modal-body {
   padding: 32px;
   background-color: white;
   display: grid;
 }
-.modal-anim-enter-active,
-.modal-anim-leave-active {
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.modal-anim-enter-from,
-.modal-anim-leave-to {
-  opacity: 0;
-  transform: scale(0.9) translateY(20px);
-}
-.modal-anim-enter-to,
-.modal-anim-leave-from {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-}
+
 .modal-body :deep(.module) {
   background-color: transparent;
   border: none;
@@ -198,7 +191,27 @@ onMounted(() => {
   padding: 0;
 }
 
-/* Badge de Conexión */
+/* Animaciones del Modal */
+.modal-anim-enter-active,
+.modal-anim-leave-active {
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.modal-anim-enter-from,
+.modal-anim-leave-to {
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+}
+
+.modal-anim-enter-to,
+.modal-anim-leave-from {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+/* =========================================
+   BADGE DE CONEXIÓN A SOCKETS
+   ========================================= */
 .connection-badge {
   position: fixed;
   bottom: 20px;
@@ -214,14 +227,17 @@ onMounted(() => {
   z-index: 500;
   transition: background-color 0.3s;
 }
+
 .connection-badge.online {
   background-color: #22c55e;
   color: white;
 }
+
 .connection-badge.offline {
   background-color: #ef4444;
   color: white;
 }
+
 .badge-icon {
   font-size: 1.8rem;
 }
